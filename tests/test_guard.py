@@ -57,3 +57,28 @@ def test_llm10_limits():
     assert not check_input("x" * 5000).allowed
     b = TokenBucket(rate_per_s=0.001, burst=3)
     assert [b.allow() for _ in range(5)] == [True, True, True, False, False]
+
+
+def test_classifier_yes_probability_sums_variants():
+    import math
+    from sdai.classifier import yes_probability
+    lp = [{"token": "Yes", "logprob": math.log(0.3)}, {"token": " YES", "logprob": math.log(0.3)},
+          {"token": "No", "logprob": math.log(0.2)}]
+    assert abs(yes_probability(lp) - 0.75) < 1e-9
+    assert yes_probability([{"token": "maybe", "logprob": 0.0}]) == 0.5
+
+
+def test_classifier_fails_closed(monkeypatch):
+    import httpx
+    from sdai import classifier
+
+    def down(*a, **k):
+        raise httpx.ConnectError("down")
+    monkeypatch.setattr(classifier, "score", down)
+    assert classifier.flagged("hello")[0] is True
+
+
+def test_classifier_prompt_contains_definition_and_text():
+    from sdai.classifier import RISK_DEFINITION, build_prompt
+    p = build_prompt("When are invoices due?")
+    assert "When are invoices due?" in p and RISK_DEFINITION in p and p.endswith("<|end_of_role|>")
