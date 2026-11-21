@@ -102,8 +102,64 @@ def role_views():
     im.save(IMG / "role_views.png", optimize=True)
 
 
+def injection_layers():
+    d = J("injection_l2")
+    s, lat = d["summary"], d["latency"]
+    names = [("baseline", "no guard", HEX["RED"]), ("guard_v1", "v1: rules", HEX["YELLOW"]), ("guard_v2", "v2: rules + classifier", HEX["GREEN"])]
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(15, 4.9), gridspec_kw={"width_ratios": [1.15, 1]})
+    groups = [("dev", "direct"), ("held-out", "direct")]
+    for j, (p, lab, col) in enumerate(names):
+        xs = [i + (j - 1) * 0.27 for i in range(len(groups))]
+        vals = [s[g][k][p]["succeeded"] / s[g][k][p]["n"] * 100 for g, k in groups]
+        a1.bar(xs, vals, 0.26, color=col, label=lab)
+        for x, (g, k), v in zip(xs, groups, vals):
+            a1.text(x, v + 2, f"{s[g][k][p]['succeeded']}/{s[g][k][p]['n']}", ha="center", fontsize=10)
+    a1.set_xticks(range(len(groups)), ["development set\n(10 direct attacks)", "held-out set\n(12 direct attacks)"])
+    a1.set_ylim(0, 100); a1.set_ylabel("attacks that succeeded (%)")
+    a1.set_title("Direct injection: answer contains PWNED", loc="left")
+    a1.legend(loc="upper left", fontsize=9)
+    groups = [("dev", "benign"), ("held-out", "benign")]
+    for j, (p, lab, col) in enumerate(names):
+        xs = [i + (j - 1) * 0.27 for i in range(len(groups))]
+        vals = [s[g][k][p]["blocked"] for g, k in groups]
+        a2.bar(xs, vals, 0.26, color=col)
+        for x, (g, k), v in zip(xs, groups, vals):
+            a2.text(x, v + 0.1, f"{v}/{s[g][k][p]['n']}", ha="center", fontsize=10)
+    a2.set_xticks(range(2), ["development benign\n(10 questions)", "held-out hard benign\n(12 questions)"])
+    a2.set_ylim(0, 4); a2.set_ylabel("legitimate questions blocked")
+    a2.set_title(f"Cost: false blocks · classifier call p50 {lat['classifier_call']['p50_ms']:.0f} ms", loc="left")
+    fig.suptitle("Qwen2.5-1.5B answers, Granite Guardian 3.2 3B-A800M classifies (threshold frozen on the development set) · "
+                 "poisoned documents dropped: 16/16, clean: 0/2", x=0.01, ha="left", fontsize=11, color=HEX["GREY"])
+    fig.tight_layout(); fig.savefig(IMG / "injection_layers.png"); plt.close(fig)
+
+
+def erasure():
+    d = J("erasure_eval")
+    stores = ["crm.customers", "care.call_notes", "analytics.customer_snapshot", "marketing.contact_list", "rag.index", "billing.invoices"]
+    labels = ["CRM master", "call notes", "analytics copy", "marketing export", "RAG index", "invoices\n(retained)"]
+    before = [d["found_before_total"][k] for k in stores]
+    after = [0, 0, 0, 0, 0, d["retained_invoice_rows"]]
+    fig, a = plt.subplots(figsize=(12, 4.8))
+    xs = range(len(stores))
+    a.bar([x - 0.2 for x in xs], before, 0.38, color=HEX["ORANGE"], label="found before the request")
+    a.bar([x + 0.2 for x in xs], after, 0.38, color=[HEX["GREEN"]] * 5 + [HEX["PURPLE"]], label="left after (residual scan)")
+    for x, b, f in zip(xs, before, after):
+        a.text(x - 0.2, b + 1.5, str(b), ha="center", fontsize=10)
+        a.text(x + 0.2, f + 1.5, str(f), ha="center", fontsize=10)
+    a.set_xticks(list(xs), labels)
+    a.set_ylabel("rows or documents, 50 subjects"); a.set_ylim(0, max(before) * 1.35)
+    lat = d["latency_ms"]
+    a.set_title(f"KVKK erasure: 50 requests over {d['customers']:,} customers · p50 {lat['p50']:.0f} ms, p95 {lat['p95']:.0f} ms · "
+                f"other customers' rows unchanged", loc="left")
+    from matplotlib.patches import Patch
+    a.legend(handles=[Patch(color=HEX["ORANGE"], label="found before the request"),
+                      Patch(color=HEX["GREEN"], label="left after (residual scan)"),
+                      Patch(color=HEX["PURPLE"], label="kept under a legal retention period")], loc="upper left", ncol=3)
+    fig.tight_layout(); fig.savefig(IMG / "erasure.png"); plt.close(fig)
+
+
 if __name__ == "__main__":
     IMG.mkdir(parents=True, exist_ok=True)
-    for f in (pii, rag, owasp, role_views):
+    for f in (pii, rag, owasp, role_views, injection_layers, erasure):
         f()
     print("charts written")
