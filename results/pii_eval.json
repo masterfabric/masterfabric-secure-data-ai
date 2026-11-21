@@ -1,0 +1,99 @@
+{
+  "notes": 2000,
+  "entities": 3236,
+  "with_checksum": {
+    "TCKN": {
+      "tp": 775,
+      "fp": 4,
+      "fn": 0,
+      "precision": 0.9949,
+      "recall": 1.0
+    },
+    "IBAN": {
+      "tp": 464,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "CARD": {
+      "tp": 511,
+      "fp": 43,
+      "fn": 0,
+      "precision": 0.9224,
+      "recall": 1.0
+    },
+    "PHONE": {
+      "tp": 754,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "EMAIL": {
+      "tp": 732,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "ALL": {
+      "tp": 3236,
+      "fp": 47,
+      "fn": 0,
+      "precision": 0.9857,
+      "recall": 1.0
+    }
+  },
+  "pattern_only": {
+    "TCKN": {
+      "tp": 775,
+      "fp": 760,
+      "fn": 0,
+      "precision": 0.5049,
+      "recall": 1.0
+    },
+    "IBAN": {
+      "tp": 464,
+      "fp": 234,
+      "fn": 0,
+      "precision": 0.6648,
+      "recall": 1.0
+    },
+    "CARD": {
+      "tp": 511,
+      "fp": 527,
+      "fn": 0,
+      "precision": 0.4923,
+      "recall": 1.0
+    },
+    "PHONE": {
+      "tp": 754,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "EMAIL": {
+      "tp": 732,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "ALL": {
+      "tp": 3236,
+      "fp": 1521,
+      "fn": 0,
+      "precision": 0.6803,
+      "recall": 1.0
+    }
+  },
+  "mask_notes_per_s": 95545,
+  "entities_left_unmasked": 0,
+  "example": {
+    "original": "Customer disputes charge on card 9907 5793 8347 0174; wants credit to TR42 0001 5018 0967 9290 8100 33. Old order 35854117055.",
+    "redact": "Customer disputes charge on card <CARD>; wants credit to <IBAN>. Old order 35854117055.",
+    "partial": "Customer disputes charge on card **** **** **** 0174; wants credit to **** **** **** **** **** ***0 33. Old order 35854117055."
+  }
+}
