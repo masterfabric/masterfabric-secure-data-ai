@@ -1,6 +1,6 @@
 {
   "rows": 200000,
-  "load_s": 3.91,
+  "load_s": 3.92,
   "roles": {
     "dpo": {
       "columns": [
@@ -103,22 +103,22 @@
       "rows_visible": 200000,
       "sample": [
         [
-          "0000756bf74ed635",
-          "6e7a75d1e607358e",
-          "Adana",
-          "1989",
+          "000041782ad69609",
+          "85e01f7554d18e1c",
+          "Trabzon",
+          "1963",
           "consumer",
-          "True",
-          "3037.23"
+          "False",
+          "256.35"
         ],
         [
-          "000075f0e4925dc0",
-          "27f13e8ea4d4d5bd",
-          "Antalya",
-          "1983",
+          "0000640745dfc07b",
+          "a52d60ca3fa32439",
+          "Konya",
+          "1996",
           "business",
           "True",
-          "223.51"
+          "859.92"
         ]
       ]
     },
@@ -252,26 +252,28 @@
   },
   "overhead": {
     "dpo": {
-      "aggregate_raw_ms": 4.8,
-      "aggregate_view_ms": 3.6,
-      "full_scan_raw_ms": 164.8,
-      "full_scan_view_ms": 161.4
+      "aggregate_raw_ms": 4.9,
+      "aggregate_view_ms": 3.5,
+      "full_scan_raw_ms": 166.5,
+      "full_scan_view_ms": 161.5
     },
     "data_scientist": {
-      "aggregate_raw_ms": 2.6,
-      "aggregate_view_ms": 2.7,
-      "full_scan_raw_ms": 162.2,
-      "full_scan_view_ms": 439.5
+      "aggregate_raw_ms": 2.7,
+      "aggregate_view_ms": 2.8,
+      "full_scan_raw_ms": 161.8,
+      "full_scan_view_ms": 448.9
     },
     "marketing": {
-      "aggregate_raw_ms": 2.6,
+      "aggregate_raw_ms": 2.7,
       "aggregate_view_ms": 2.3,
-      "full_scan_raw_ms": 160.0,
-      "full_scan_view_ms": 45.9
+      "full_scan_raw_ms": 162.1,
+      "full_scan_view_ms": 46.3
     }
   },
   "audit": {
     "entries": 60,
-    "denied": 50
+    "denied": 50,
+    "engine_errors": 0,
+    "chain_verified": true
   }
 }

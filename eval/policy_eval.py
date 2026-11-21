@@ -39,6 +39,7 @@ def main():
     con = duckdb.connect()
     t = time.perf_counter(); load_customers(con, customers(n)); load_s = time.perf_counter() - t
     audit = Path("results/raw/audit.jsonl"); audit.parent.mkdir(parents=True, exist_ok=True); audit.unlink(missing_ok=True)
+    audit.with_suffix(".anchor").unlink(missing_ok=True)
     eng = PolicyEngine(con, "policies/customers.yaml", audit)
     lock_down(con)
     roles = list(eng.policy["roles"])
@@ -68,8 +69,10 @@ def main():
             "full_scan_raw_ms": round(timed(lambda: con.execute(full.format(t="crm.customers")).fetchall(), 3) * 1000, 1),
             "full_scan_view_ms": round(timed(lambda: con.execute(full.format(t=f"{r}.customers")).fetchall(), 3) * 1000, 1),
         }
-    lines = audit.read_text().splitlines()
-    out["audit"] = {"entries": len(lines), "denied": sum('"deny"' in l for l in lines)}
+    ents = eng.audit.entries()
+    rep = eng.audit.verify()
+    out["audit"] = {"entries": len(ents), "denied": sum(e["decision"] == "deny" for e in ents),
+                    "engine_errors": sum(e["decision"] == "error" for e in ents), "chain_verified": rep.ok}
     Path("results/policy_eval.json").write_text(json.dumps(out, indent=2, ensure_ascii=False))
     print(json.dumps({k: v for k, v in out.items() if k != "roles"}, indent=1)[:2500])
     for r, v in out["roles"].items():
