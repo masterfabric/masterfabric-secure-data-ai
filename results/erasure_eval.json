@@ -1,0 +1,63 @@
+{
+  "customers": 200000,
+  "estate_build_s": 1.6,
+  "requests": 50,
+  "subjects_with_rag_tickets": 25,
+  "found_before_total": {
+    "crm.customers": 50,
+    "billing.invoices": 100,
+    "analytics.customer_snapshot": 50,
+    "marketing.contact_list": 27,
+    "care.call_notes": 91,
+    "rag.index": 25
+  },
+  "negative_control_every_subject_found_in_crm": true,
+  "actions_total": {
+    "care.call_notes.deleted": 86,
+    "care.call_notes.redacted": 5,
+    "analytics.customer_snapshot.deleted": 50,
+    "marketing.contact_list.deleted": 27,
+    "crm.customers.deleted": 50,
+    "rag.documents.removed": 25
+  },
+  "subjects_with_shared_identifiers": 22,
+  "shared_identifier_kinds": {
+    "tckn": 0,
+    "phone": 0,
+    "email": 22,
+    "iban": 0,
+    "card_number": 0
+  },
+  "retained_invoice_rows": 100,
+  "status_counts": {
+    "erased": 50,
+    "incomplete": 0
+  },
+  "residual_outside_retention_total": 0,
+  "untouched_rows_unchanged": {
+    "crm.customers": true,
+    "care.call_notes": true,
+    "billing.invoices": true,
+    "analytics.customer_snapshot": true,
+    "marketing.contact_list": true
+  },
+  "untouched_rows_counted": {
+    "crm.customers": 199950,
+    "care.call_notes": 299909,
+    "billing.invoices": 400000,
+    "analytics.customer_snapshot": 199950,
+    "marketing.contact_list": 110237
+  },
+  "repeat_request_status": "not_found",
+  "unknown_subject_status": "not_found",
+  "audit": {
+    "entries": 52,
+    "chain_verified": true,
+    "raw_identifiers_in_log": 0
+  },
+  "latency_ms": {
+    "p50": 107.8,
+    "p95": 124.6,
+    "max": 138.2
+  }
+}

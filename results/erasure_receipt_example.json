@@ -1,0 +1,40 @@
+{
+  "subject_ref": "<SUBJECT:idoiagehki>",
+  "status": "erased",
+  "shared_identifiers_needing_review": {},
+  "requested_by": "dpo-desk",
+  "completed_on": "2026-11-21",
+  "found_before": {
+    "crm.customers": 1,
+    "billing.invoices": 2,
+    "analytics.customer_snapshot": 1,
+    "marketing.contact_list": 1,
+    "care.call_notes": 5,
+    "rag.index": 1
+  },
+  "actions": {
+    "care.call_notes.deleted": 4,
+    "care.call_notes.redacted": 1,
+    "analytics.customer_snapshot.deleted": 1,
+    "marketing.contact_list.deleted": 1,
+    "crm.customers.deleted": 1,
+    "rag.documents.removed": 1
+  },
+  "retained": {
+    "billing.invoices": {
+      "rows": 2,
+      "basis": "legal retention obligation (KVKK art. 5(2)(ç))",
+      "erasable_from": "2036-02-19"
+    }
+  },
+  "residual_after": {
+    "crm.customers": 0,
+    "billing.invoices": 2,
+    "analytics.customer_snapshot": 0,
+    "marketing.contact_list": 0,
+    "care.call_notes": 0,
+    "rag.index": 0
+  },
+  "residual_outside_retention": {},
+  "elapsed_ms": 138.2
+}
