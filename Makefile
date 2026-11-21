@@ -16,7 +16,7 @@ help: ## Show targets
 venv: ## Create .venv with uv and the pinned dependencies
 	uv venv -p 3.12 .venv && uv pip install -p .venv -r requirements.txt
 
-test: ## Unit tests (28)
+test: ## Unit tests (43)
 	$(PY) -m pytest -q
 
 eval: pii policy rag erasure ## PII, policy and RAG evaluations and erasure (no model needed)
