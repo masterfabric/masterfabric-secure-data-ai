@@ -51,6 +51,7 @@ def card(base, path, box, label, color, crop=None):
 
 def main():
     p, pol, rag, ow = load("pii_eval"), load("policy_eval"), load("rag_eval")["modes"], load("owasp_llm")["summary"]
+    inj, er = load("injection_l2")["summary"], load("erasure_eval")
     leak_none = max(v["unauthorized_rate"] for v in rag["none_masked"].values())
     leak_pre = sum(v["unauthorized"] for v in rag["pre_masked"].values())
     allowed = sum(v == "ALLOWED" for b in pol["bypass"].values() for v in b.values())
@@ -75,13 +76,13 @@ def main():
     facts = [
         (f"PII precision {p['pattern_only']['ALL']['precision']:.2f} → {a['precision']:.3f}, recall {a['recall']:.1f}",
          f"checksums on TCKN, IBAN and cards · {p['notes']:,} labelled notes with decoys", GREEN),
-        (f"{allowed}/{tried} bypass queries allowed",
-         f"{pol['rows']:,} customers · 5 roles · column masks, row filters, audit log", ORANGE),
+        (f"{allowed}/{tried} bypass queries · {er['residual_outside_retention_total']} left after {er['requests']} erasures",
+         f"{pol['rows']:,} customers · 5 roles · hash-chained audit log · KVKK erasure", ORANGE),
         (f"RAG: {leak_none * 100:.1f}% → {leak_pre} unauthorised chunks",
          "ACL filter before ranking · PII pseudonymised at ingest", PURPLE),
         (f"PII leak {o['LLM02 disclosure']['baseline']['succeeded']}/8 → {o['LLM02 disclosure']['guarded']['succeeded']}/8 · "
-         f"injection {o['LLM01 direct']['baseline']['succeeded']}/10 → {o['LLM01 direct']['guarded']['succeeded']}/10",
-         "real local model (Qwen2.5-1.5B) · paraphrased injections still get through", RED),
+         f"new injections {inj['held-out']['direct']['guard_v1']['succeeded']}/12 → {inj['held-out']['direct']['guard_v2']['succeeded']}/12",
+         "Qwen2.5-1.5B · rules + Granite Guardian classifier · held-out attacks", RED),
     ]
     y = 430
     for title, sub, col in facts:
