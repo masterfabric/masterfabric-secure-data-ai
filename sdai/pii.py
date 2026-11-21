@@ -75,7 +75,12 @@ _RUN_KEY = os.urandom(32)  # per-process key when none is configured: tokens are
 
 
 def pseudonym(value: str, kind: str) -> str:
-    return f"<{kind}:{hmac.new(_key(), value.encode(), hashlib.sha256).hexdigest()[:10]}>"
+    # Letters only, so a pseudonym can never look like a phone number or an ID to a later scan.
+    token = hmac.new(_key(), value.encode(), hashlib.sha256).hexdigest()[:10].translate(_DIGITS_TO_LETTERS)
+    return f"<{kind}:{token}>"
+
+
+_DIGITS_TO_LETTERS = str.maketrans("0123456789", "ghijklmnop")
 
 
 def mask_value(value: str, kind: str, mode: str = "redact") -> str:
