@@ -3,7 +3,7 @@
 Each role gets a secure view over the raw table: listed columns with their mask applied, a row
 filter, and nothing else (default deny). Queries are checked before execution: every table they
 reference must be the role's own view, so a role cannot read crm.customers directly. Every
-attempt, allowed or denied, is appended to an audit log.
+attempt, allowed or denied, is appended to a hash-chained audit log (sdai/audit.py) with the SQL PII-masked.
 """
 from __future__ import annotations
 
@@ -11,11 +11,12 @@ import hashlib
 import hmac
 import json
 import os
-import time
 from pathlib import Path
 
 import duckdb
 import yaml
+
+from .audit import AuditLog
 
 MASKS = {
     "NONE": "{c}",
@@ -34,11 +35,13 @@ class AccessDenied(Exception):
 
 
 class PolicyEngine:
-    def __init__(self, con: duckdb.DuckDBPyConnection, policy_file: str | Path, audit_file: str | Path | None = None):
+    def __init__(self, con: duckdb.DuckDBPyConnection, policy_file: str | Path, audit: str | Path | AuditLog | None = None,
+                 actor: str = "service"):
         self.con = con
         self.policy = yaml.safe_load(Path(policy_file).read_text())
         self.schema, self.table = self.policy["table"].split(".")
-        self.audit_file = Path(audit_file) if audit_file else None
+        self.audit = audit if isinstance(audit, AuditLog) or audit is None else AuditLog(audit)
+        self.actor = actor
         # The hash salt comes from the environment or is random per process; it is never stored.
         # It lives in a Python UDF, so it never appears in a view definition that a role could read.
         key = (os.environ.get("SDAI_HASH_SALT") or os.urandom(16).hex()).encode()
@@ -64,8 +67,8 @@ class PolicyEngine:
     def visible_columns(self, role: str) -> list[str]:
         return [r[0] for r in self.con.execute(f"DESCRIBE {role}.{self.table}").fetchall()]
 
-    def query(self, role: str, sql: str):
-        entry = {"ts": time.time(), "role": role, "sql": sql}
+    def query(self, role: str, sql: str, actor: str | None = None):
+        entry = {"decision": "error", "reason": ""}
         try:
             if role not in self.policy["roles"]:
                 raise AccessDenied(f"unknown role {role}")
@@ -81,10 +84,13 @@ class PolicyEngine:
         except AccessDenied as e:
             entry |= {"decision": "deny", "reason": str(e)}
             raise
+        except Exception as e:  # engine errors are audited too, without the message (it can echo literals)
+            entry["reason"] = type(e).__name__
+            raise
         finally:
-            if self.audit_file:
-                with self.audit_file.open("a") as f:
-                    f.write(json.dumps(entry, ensure_ascii=False) + "\n")
+            if self.audit:
+                self.audit.append(actor or self.actor, role, "sql.query", entry["decision"], entry["reason"],
+                                  {"sql": sql, "rows": entry.get("rows")})
 
 
 def _walk(node):
