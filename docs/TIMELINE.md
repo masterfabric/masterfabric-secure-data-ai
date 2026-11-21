@@ -34,3 +34,72 @@ Every step below is one commit, in order. Times are Europe/Istanbul (UTC+3).
 
 The final commit adds this file and the README; see `git log` for the full messages, which explain
 the why of each step (including the fixes found by running the system).
+
+
+## Addition: second injection layer, hash-chained audit log and dashboard, KVKK erasure (2026-11-21)
+
+Started from `b0b1740`. The held-out injection set was committed first, before the second layer existed.
+Times are Europe/Istanbul.
+
+| # | Commit | Time | Change |
+|---|---|---|---|
+| 1 | `545a102` | 2026-11-21 13:15 | eval: held-out injection set (12 direct, 8 indirect, 12 hard benign), fixed before the second layer is built |
+| 2 | `3d1562f` | 2026-11-21 13:18 | guard: second injection layer, Granite Guardian classifier on questions and retrieved documents (fails closed) |
+| 3 | `e7982cd` | 2026-11-21 13:18 | eval: guard v1 vs v2 on dev and held-out injection sets; Makefile guard-up/guard-down/injection |
+| 4 | `c795ce7` | 2026-11-21 13:18 | results: held-out direct injections 7/12 (rules) -> 1/12 (rules + classifier), 2/12 hard-benign blocked |
+| 5 | `87ddaa5` | 2026-11-21 13:20 | audit: hash-chained append-only log with anchor file, PII-masked fields, verify() and tests |
+| 6 | `a665c12` | 2026-11-21 13:20 | policy: write every query attempt to the hash-chained audit log, engine errors included |
+| 7 | `0e8c549` | 2026-11-21 13:20 | eval: policy audit now reports chain verification (60 entries, 50 denied, chain intact) |
+| 8 | `1e27b96` | 2026-11-21 13:27 | erasure: KVKK right-to-erasure across CRM, notes, derived copies, marketing export and the RAG index, with receipts |
+| 9 | `33bb14b` | 2026-11-21 13:27 | eval: erasure on 200,000 customers with negative control, untouched-row fingerprints and shared-identifier review |
+| 10 | `1790022` | 2026-11-21 13:27 | results: 50 erasures, 0 residual rows outside retained invoices, p50 108 ms; 22 subjects share an e-mail with another customer |
+| 11 | `c93518a` | 2026-11-21 13:28 | audit: guard input decisions and RAG searches can be written to the same chained log |
+| 12 | `267436d` | 2026-11-21 13:30 | audit: keep the log and anchor open; append drops from 2.45 ms to 26 us on the test Mac |
+| 13 | `07106f3` | 2026-11-21 13:30 | eval: simulated day of 2,404 audit entries from policy, guard, RAG and erasure; 3 of 3 tamper drills detected |
+| 14 | `f82836e` | 2026-11-21 13:32 | deps: playwright as a dev-only requirement; NOTICE lists Granite Guardian and Playwright (both Apache-2.0) |
+| 15 | `4fb5bfb` | 2026-11-21 13:32 | dashboard: self-contained audit log dashboard (inline SVG, no JavaScript) built from the simulated day |
+| 16 | `26fc665` | 2026-11-21 13:32 | docs: audit dashboard screenshot |
+| 17 | `a458527` | 2026-11-21 13:33 | charts: injection layers (attacks and false blocks) and erasure (found vs left per store) |
+| 18 | `1f99cff` | 2026-11-21 13:33 | diagram: architecture with classifier layer, audit log and erasure service |
+| 19 | `82e23ba` | 2026-11-21 13:33 | charts: role views regenerated from the re-run policy evaluation (hash salt is per run) |
+| 20 | `286a8c3` | 2026-11-21 13:34 | docs: ADRs 0004-0006 (classifier layer, hash-chained audit log, KVKK erasure) |
+| 21 | `7cc85e2` | 2026-11-21 13:35 | README: sections 5-7 (classifier layer, audit log and dashboard, KVKK erasure), key results, figures 6-8, limitations |
+| 22 | `d3e08cb` | 2026-11-21 13:36 | hero: erasure and held-out injection numbers read from results |
+| 23 | (this commit) | | docs(timeline): this section |
+
+### Verification (measured on the M4 Pro)
+
+| Check | Result |
+|---|---|
+| Model files | Qwen2.5-1.5B and Granite Guardian 3.2 3B-A800M sha256 checked by `make llm-up` / `guard-up` before serving |
+| Known-answer detection (rejected) | dev: 1/10 direct, 1/8 poisoned documents flagged |
+| Direct injection, dev | 7/10 (no guard) → 4/10 (rules) → 0/10 (rules + classifier) |
+| Direct injection, held-out | 7/12 → 7/12 → 1/12 |
+| Legitimate questions blocked | 0/10 and 0/12 with rules; 1/10 and 2/12 with the classifier |
+| Poisoned documents dropped | 16/16; clean documents 0/2 |
+| Latency | classifier call p50 71 ms, p95 75 ms; end to end p50 115 ms (v1) vs 166 ms (v2) |
+| Policy audit | 60 entries, 50 denied, chain verified |
+| Simulated audit day | 2,404 entries, 65 denied, chain verified; 3/3 tamper drills detected (truncation only via the anchor) |
+| Audit cost | 25.8 µs per append, verify 20,000 entries in 0.094 s |
+| Erasure, 50 of 200,000 customers | 50/50 erased, 0 residual outside 100 retained invoice rows, other rows unchanged in 5 tables, p50 108 ms / p95 125 ms |
+| Unit tests | 43 passed |
+| Machine state | both llama-servers stopped at the end; Colima and k3d not used; ports 3000, 8081, 11234 not touched |
+
+### Found while running it
+
+- Known-answer detection does not work with a 1.5B answering model: it repeats the key and ignores the
+  injected text, so the probe fired on 1 of 10 attacks.
+- The rule layer caught none of the 12 held-out direct attacks. All of the improvement comes from the classifier.
+- The classifier sees the pseudonymised question, not the raw one; one development benign question with a
+  national ID scored 0.58 on that form and was blocked, although the threshold had been picked on raw text.
+- The audit log first opened its file for every entry: 2.45 ms per append, almost all of it in `open()`.
+  Keeping the handles open: 25.8 µs.
+- 22 of 50 erasure subjects share their e-mail with another synthetic customer. The first erasure run flagged
+  70 "residual" rows that belonged to those other people; identifiers shared by several customers are now left
+  out of matching and sent to review.
+- Scanning free text with a regex per row made each erasure take about 8 s; a digits-only shadow column on the
+  notes brought it to about 0.1 s.
+- A byte search of a DuckDB file found none of 50 e-mails even before deletion (compressed strings), so it
+  cannot serve as an erasure check either way.
+- Re-running the policy evaluation changes the hashed values in the role-view figure, because the hash salt is
+  random per run unless `SDAI_HASH_SALT` is set.
