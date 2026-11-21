@@ -29,6 +29,7 @@ def test_detect_and_redact_all_kinds():
 
 def test_partial_and_pseudonym():
     assert mask_value("TR590001203186091390996030", "IBAN", "partial").endswith("6030")
+    assert mask_value("TR42 0001 5018 0967 9290 8100 33", "IBAN", "partial").endswith("00 33")
     assert mask_value("ali.kaya@example.com", "EMAIL", "partial") == "al******@example.com"
     assert pseudonym("70181590898", "TCKN") == pseudonym("70181590898", "TCKN")
     assert pseudonym("70181590898", "TCKN") != pseudonym("70181590899", "TCKN")

@@ -93,7 +93,11 @@ def mask_value(value: str, kind: str, mode: str = "redact") -> str:
         if kind == "EMAIL":
             user, dom = value.split("@", 1)
             return user[:keep] + "*" * max(1, len(user) - keep) + "@" + dom
-        return re.sub(r"[0-9A-Za-z]", "*", value[:-keep]) + value[-keep:]
+        cut, seen = len(value), 0  # keep the last 4 letters/digits, however the value is spaced
+        while cut > 0 and seen < keep:
+            cut -= 1
+            seen += value[cut].isalnum()
+        return re.sub(r"[0-9A-Za-z]", "*", value[:cut]) + value[cut:]
     raise ValueError(mode)
 
 
