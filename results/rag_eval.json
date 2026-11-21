@@ -1,0 +1,235 @@
+{
+  "docs": 406,
+  "queries_per_principal": 300,
+  "k": 5,
+  "modes": {
+    "none_raw": {
+      "public_chatbot": {
+        "results": 1500,
+        "unauthorized": 1492,
+        "unauthorized_rate": 0.9947,
+        "pii_entities_in_context": 4476,
+        "avg_results": 5.0,
+        "eligible_targets": 0,
+        "recall_at_k": null
+      },
+      "support_istanbul": {
+        "results": 1500,
+        "unauthorized": 1403,
+        "unauthorized_rate": 0.9353,
+        "pii_entities_in_context": 4476,
+        "avg_results": 5.0,
+        "eligible_targets": 16,
+        "recall_at_k": 1.0
+      },
+      "business_desk": {
+        "results": 1500,
+        "unauthorized": 1224,
+        "unauthorized_rate": 0.816,
+        "pii_entities_in_context": 4476,
+        "avg_results": 5.0,
+        "eligible_targets": 57,
+        "recall_at_k": 1.0
+      },
+      "fraud_team": {
+        "results": 1500,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 4476,
+        "avg_results": 5.0,
+        "eligible_targets": 300,
+        "recall_at_k": 1.0
+      }
+    },
+    "none_masked": {
+      "public_chatbot": {
+        "results": 1500,
+        "unauthorized": 1494,
+        "unauthorized_rate": 0.996,
+        "pii_entities_in_context": 0,
+        "avg_results": 5.0,
+        "eligible_targets": 0,
+        "recall_at_k": null
+      },
+      "support_istanbul": {
+        "results": 1500,
+        "unauthorized": 1403,
+        "unauthorized_rate": 0.9353,
+        "pii_entities_in_context": 0,
+        "avg_results": 5.0,
+        "eligible_targets": 16,
+        "recall_at_k": 1.0
+      },
+      "business_desk": {
+        "results": 1500,
+        "unauthorized": 1224,
+        "unauthorized_rate": 0.816,
+        "pii_entities_in_context": 0,
+        "avg_results": 5.0,
+        "eligible_targets": 57,
+        "recall_at_k": 1.0
+      },
+      "fraud_team": {
+        "results": 1500,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 0,
+        "avg_results": 5.0,
+        "eligible_targets": 300,
+        "recall_at_k": 1.0
+      }
+    },
+    "post_raw": {
+      "public_chatbot": {
+        "results": 8,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 0,
+        "avg_results": 0.03,
+        "eligible_targets": 0,
+        "recall_at_k": null
+      },
+      "support_istanbul": {
+        "results": 97,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 291,
+        "avg_results": 0.32,
+        "eligible_targets": 16,
+        "recall_at_k": 1.0
+      },
+      "business_desk": {
+        "results": 276,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 828,
+        "avg_results": 0.92,
+        "eligible_targets": 57,
+        "recall_at_k": 1.0
+      },
+      "fraud_team": {
+        "results": 1500,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 4476,
+        "avg_results": 5.0,
+        "eligible_targets": 300,
+        "recall_at_k": 1.0
+      }
+    },
+    "post_masked": {
+      "public_chatbot": {
+        "results": 6,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 0,
+        "avg_results": 0.02,
+        "eligible_targets": 0,
+        "recall_at_k": null
+      },
+      "support_istanbul": {
+        "results": 97,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 0,
+        "avg_results": 0.32,
+        "eligible_targets": 16,
+        "recall_at_k": 1.0
+      },
+      "business_desk": {
+        "results": 276,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 0,
+        "avg_results": 0.92,
+        "eligible_targets": 57,
+        "recall_at_k": 1.0
+      },
+      "fraud_team": {
+        "results": 1500,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 0,
+        "avg_results": 5.0,
+        "eligible_targets": 300,
+        "recall_at_k": 1.0
+      }
+    },
+    "pre_raw": {
+      "public_chatbot": {
+        "results": 300,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 0,
+        "avg_results": 1.0,
+        "eligible_targets": 0,
+        "recall_at_k": null
+      },
+      "support_istanbul": {
+        "results": 1217,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 3651,
+        "avg_results": 4.06,
+        "eligible_targets": 16,
+        "recall_at_k": 1.0
+      },
+      "business_desk": {
+        "results": 1500,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 4500,
+        "avg_results": 5.0,
+        "eligible_targets": 57,
+        "recall_at_k": 1.0
+      },
+      "fraud_team": {
+        "results": 1500,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 4476,
+        "avg_results": 5.0,
+        "eligible_targets": 300,
+        "recall_at_k": 1.0
+      }
+    },
+    "pre_masked": {
+      "public_chatbot": {
+        "results": 300,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 0,
+        "avg_results": 1.0,
+        "eligible_targets": 0,
+        "recall_at_k": null
+      },
+      "support_istanbul": {
+        "results": 1217,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 0,
+        "avg_results": 4.06,
+        "eligible_targets": 16,
+        "recall_at_k": 1.0
+      },
+      "business_desk": {
+        "results": 1500,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 0,
+        "avg_results": 5.0,
+        "eligible_targets": 57,
+        "recall_at_k": 1.0
+      },
+      "fraud_team": {
+        "results": 1500,
+        "unauthorized": 0,
+        "unauthorized_rate": 0.0,
+        "pii_entities_in_context": 0,
+        "avg_results": 5.0,
+        "eligible_targets": 300,
+        "recall_at_k": 1.0
+      }
+    }
+  }
+}
