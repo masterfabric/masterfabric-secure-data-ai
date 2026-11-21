@@ -1,0 +1,1 @@
+playwright==1.65.2  # Apache-2.0; dashboard screenshot only (viz/screenshot_dashboard.py)
