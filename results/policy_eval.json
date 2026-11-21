@@ -1,0 +1,277 @@
+{
+  "rows": 200000,
+  "load_s": 3.91,
+  "roles": {
+    "dpo": {
+      "columns": [
+        "customer_id",
+        "full_name",
+        "tckn",
+        "phone",
+        "email",
+        "iban",
+        "card_number",
+        "city",
+        "birth_date",
+        "segment",
+        "consent_marketing",
+        "monthly_spend_try"
+      ],
+      "rows_visible": 200000,
+      "sample": [
+        [
+          "100001",
+          "Can Çelik",
+          "70181590898",
+          "+90 536 138 21 65",
+          "can.celik429@example.com",
+          "TR590001203186091390996030",
+          "9824628194821990",
+          "Bursa",
+          "1973-02-18",
+          "consumer",
+          "False",
+          "628.45"
+        ],
+        [
+          "100002",
+          "Elif Aslan",
+          "67975432328",
+          "+90 532 688 48 77",
+          "elif.aslan507@example.com",
+          "TR160006407491186252760189",
+          "9555979711471040",
+          "Trabzon",
+          "1993-08-10",
+          "business",
+          "False",
+          "336.17"
+        ]
+      ]
+    },
+    "fraud_analyst": {
+      "columns": [
+        "customer_id",
+        "full_name",
+        "tckn",
+        "phone",
+        "email",
+        "iban",
+        "card_number",
+        "city",
+        "segment",
+        "monthly_spend_try"
+      ],
+      "rows_visible": 200000,
+      "sample": [
+        [
+          "100001",
+          "Can Çelik",
+          "70181590898",
+          "None",
+          "None",
+          "**********************6030",
+          "************1990",
+          "Bursa",
+          "consumer",
+          "628.45"
+        ],
+        [
+          "100002",
+          "Elif Aslan",
+          "67975432328",
+          "None",
+          "None",
+          "**********************0189",
+          "************1040",
+          "Trabzon",
+          "business",
+          "336.17"
+        ]
+      ]
+    },
+    "data_scientist": {
+      "columns": [
+        "customer_id",
+        "tckn",
+        "city",
+        "birth_date",
+        "segment",
+        "consent_marketing",
+        "monthly_spend_try"
+      ],
+      "rows_visible": 200000,
+      "sample": [
+        [
+          "0000756bf74ed635",
+          "6e7a75d1e607358e",
+          "Adana",
+          "1989",
+          "consumer",
+          "True",
+          "3037.23"
+        ],
+        [
+          "000075f0e4925dc0",
+          "27f13e8ea4d4d5bd",
+          "Antalya",
+          "1983",
+          "business",
+          "True",
+          "223.51"
+        ]
+      ]
+    },
+    "marketing": {
+      "columns": [
+        "customer_id",
+        "full_name",
+        "email",
+        "city",
+        "segment"
+      ],
+      "rows_visible": 110264,
+      "sample": [
+        [
+          "100003",
+          "H. K.",
+          "hatice.kaya905@example.com",
+          "İstanbul",
+          "business"
+        ],
+        [
+          "100009",
+          "F. A.",
+          "fatma.aydin436@example.com",
+          "Bursa",
+          "consumer"
+        ]
+      ]
+    },
+    "support_istanbul": {
+      "columns": [
+        "customer_id",
+        "full_name",
+        "phone",
+        "email",
+        "city",
+        "segment"
+      ],
+      "rows_visible": 20179,
+      "sample": [
+        [
+          "100003",
+          "Hatice Kaya",
+          "+********8045",
+          "ha***@example.com",
+          "İstanbul",
+          "business"
+        ],
+        [
+          "100010",
+          "Zeynep Kara",
+          "+********3953",
+          "ze***@example.com",
+          "İstanbul",
+          "consumer"
+        ]
+      ]
+    }
+  },
+  "bypass": {
+    "raw table": {
+      "dpo": "denied",
+      "fraud_analyst": "denied",
+      "data_scientist": "denied",
+      "marketing": "denied",
+      "support_istanbul": "denied"
+    },
+    "unqualified name": {
+      "dpo": "denied",
+      "fraud_analyst": "denied",
+      "data_scientist": "denied",
+      "marketing": "denied",
+      "support_istanbul": "denied"
+    },
+    "another role's view": {
+      "dpo": "denied",
+      "fraud_analyst": "denied",
+      "data_scientist": "denied",
+      "marketing": "denied",
+      "support_istanbul": "denied"
+    },
+    "file read": {
+      "dpo": "denied",
+      "fraud_analyst": "denied",
+      "data_scientist": "denied",
+      "marketing": "denied",
+      "support_istanbul": "denied"
+    },
+    "file replacement scan": {
+      "dpo": "denied",
+      "fraud_analyst": "denied",
+      "data_scientist": "denied",
+      "marketing": "denied",
+      "support_istanbul": "denied"
+    },
+    "catalog / view SQL": {
+      "dpo": "denied",
+      "fraud_analyst": "denied",
+      "data_scientist": "denied",
+      "marketing": "denied",
+      "support_istanbul": "denied"
+    },
+    "subquery on raw": {
+      "dpo": "denied",
+      "fraud_analyst": "denied",
+      "data_scientist": "denied",
+      "marketing": "denied",
+      "support_istanbul": "denied"
+    },
+    "stacked statement": {
+      "dpo": "denied",
+      "fraud_analyst": "denied",
+      "data_scientist": "denied",
+      "marketing": "denied",
+      "support_istanbul": "denied"
+    },
+    "config change": {
+      "dpo": "denied",
+      "fraud_analyst": "denied",
+      "data_scientist": "denied",
+      "marketing": "denied",
+      "support_istanbul": "denied"
+    },
+    "DDL": {
+      "dpo": "denied",
+      "fraud_analyst": "denied",
+      "data_scientist": "denied",
+      "marketing": "denied",
+      "support_istanbul": "denied"
+    }
+  },
+  "overhead": {
+    "dpo": {
+      "aggregate_raw_ms": 4.8,
+      "aggregate_view_ms": 3.6,
+      "full_scan_raw_ms": 164.8,
+      "full_scan_view_ms": 161.4
+    },
+    "data_scientist": {
+      "aggregate_raw_ms": 2.6,
+      "aggregate_view_ms": 2.7,
+      "full_scan_raw_ms": 162.2,
+      "full_scan_view_ms": 439.5
+    },
+    "marketing": {
+      "aggregate_raw_ms": 2.6,
+      "aggregate_view_ms": 2.3,
+      "full_scan_raw_ms": 160.0,
+      "full_scan_view_ms": 45.9
+    }
+  },
+  "audit": {
+    "entries": 60,
+    "denied": 50
+  }
+}
