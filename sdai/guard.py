@@ -37,12 +37,17 @@ class Verdict:
     text: str = ""
 
 
-def check_input(text: str) -> Verdict:
+def check_input(text: str, audit=None, actor: str = "anonymous", role: str = "chat") -> Verdict:
+    """Rule layer for user input. With an AuditLog, every decision is recorded (the text PII-masked)."""
     if len(text) > MAX_INPUT_CHARS:  # LLM10 unbounded consumption
-        return Verdict(False, "input too long")
-    if INJECTION.search(text):
-        return Verdict(False, "prompt injection pattern")
-    return Verdict(True, text=mask_text(text, "pseudonymize"))  # LLM02: do not send user-typed PII to the model
+        v = Verdict(False, "input too long")
+    elif INJECTION.search(text):
+        v = Verdict(False, "prompt injection pattern")
+    else:
+        v = Verdict(True, text=mask_text(text, "pseudonymize"))  # LLM02: do not send user-typed PII to the model
+    if audit is not None:
+        audit.append(actor, role, "llm.input", "allow" if v.allowed else "deny", v.reason, {"text": text[:200]})
+    return v
 
 
 def sanitize_document(text: str) -> str:

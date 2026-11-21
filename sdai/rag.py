@@ -102,7 +102,8 @@ class BM25:
 
 
 class SecureRetriever:
-    def __init__(self, docs: list[Doc], mask: bool = True):
+    def __init__(self, docs: list[Doc], mask: bool = True, audit=None):
+        self.audit = audit  # optional sdai.audit.AuditLog: every search is recorded with the query PII-masked
         self.docs = [Doc(d.doc_id, mask_text(d.text, "pseudonymize") if mask else d.text, d.classification, d.tenant,
                          d.region, d.topic) for d in docs]
         self.index = BM25(self.docs)
@@ -114,4 +115,7 @@ class SecureRetriever:
             hits = [h for h in self.index.scores(query)[:k] if who.can_read(self.docs[h[1]])]
         else:
             hits = self.index.scores(query, allowed=who.can_read)[:k]
+        if self.audit is not None:
+            self.audit.append(who.name, who.clearance, "rag.search", "allow", "",
+                              {"query": query[:200], "mode": mode, "returned": len(hits)})
         return [self.docs[i] for _, i in hits]
