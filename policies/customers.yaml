@@ -1,0 +1,18 @@
+# Ranger-style policies for crm.customers. Default deny: a column not listed for a role is not visible.
+# Masks: NONE, MASK_SHOW_LAST_4, MASK_EMAIL, HASH (keyed SHA-256), INITIALS, YEAR_ONLY, NULLIFY.
+table: crm.customers
+roles:
+  dpo:                       # data protection officer: full access, every query audited
+    columns: {"*": NONE}
+  fraud_analyst:             # needs identifiers to match cases, not contact details
+    columns: {customer_id: NONE, full_name: NONE, tckn: NONE, iban: MASK_SHOW_LAST_4, card_number: MASK_SHOW_LAST_4,
+              city: NONE, segment: NONE, monthly_spend_try: NONE, phone: NULLIFY, email: NULLIFY}
+  data_scientist:            # joins on stable pseudonyms, never sees direct identifiers
+    columns: {customer_id: HASH, tckn: HASH, birth_date: YEAR_ONLY, city: NONE, segment: NONE,
+              consent_marketing: NONE, monthly_spend_try: NONE}
+  marketing:                 # KVKK explicit consent: only customers who opted in
+    columns: {customer_id: NONE, full_name: INITIALS, email: NONE, city: NONE, segment: NONE}
+    row_filter: "consent_marketing"
+  support_istanbul:          # regional call centre
+    columns: {customer_id: NONE, full_name: NONE, phone: MASK_SHOW_LAST_4, email: MASK_EMAIL, city: NONE, segment: NONE}
+    row_filter: "city = 'İstanbul'"
