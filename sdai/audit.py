@@ -48,6 +48,10 @@ class AuditLog:
         if self.path.exists() and self.path.stat().st_size:
             last = json.loads(self.path.read_text().splitlines()[-1])
             self.seq, self.prev = last["seq"], last["hash"]
+        # Handles stay open: opening a file costs about 1 ms on the test Mac, ten times the rest of an append.
+        # Each append is flushed to the OS but not fsync'ed; a power cut can lose the last entries (README).
+        self._log = self.path.open("a", buffering=1)
+        self._anchor = self.anchor.open("a+")
 
     def append(self, actor: str, role: str, action: str, decision: str, reason: str = "", detail: dict | None = None,
                ts: float | None = None) -> dict:
@@ -57,11 +61,14 @@ class AuditLog:
                  "action": action, "decision": decision, "reason": mask_text(reason), "detail": detail,
                  "prev": self.prev}
             e["hash"] = _digest(e)
-            with self.path.open("a") as f:
-                f.write(json.dumps(e, ensure_ascii=False) + "\n")
-            self.anchor.write_text(json.dumps({"seq": e["seq"], "hash": e["hash"]}))
+            self._log.write(json.dumps(e, ensure_ascii=False) + "\n")
+            self._anchor.seek(0); self._anchor.truncate()
+            self._anchor.write(json.dumps({"seq": e["seq"], "hash": e["hash"]})); self._anchor.flush()
             self.seq, self.prev = e["seq"], e["hash"]
         return e
+
+    def close(self) -> None:
+        self._log.close(); self._anchor.close()
 
     def entries(self) -> list[dict]:
         return [json.loads(line) for line in self.path.read_text().splitlines()] if self.path.exists() else []
