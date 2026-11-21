@@ -8,7 +8,7 @@ MODEL_SHA256 := 6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e
 GUARD_MODEL ?= $(HOME)/.cache/mf-models/granite-guardian-3.2-3b-a800m-Q4_K_M.gguf
 GUARD_SHA256 := 72735ad1cb9832df3141a4477cb1035228ba029e0b9076802305a07c870ccfb5
 
-.PHONY: help venv test eval pii policy rag llm-up owasp llm-down guard-up guard-down injection charts
+.PHONY: help venv test eval pii policy rag llm-up owasp llm-down guard-up guard-down injection erasure charts
 
 help: ## Show targets
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-10s\033[0m %s\n",$$1,$$2}'
@@ -19,7 +19,7 @@ venv: ## Create .venv with uv and the pinned dependencies
 test: ## Unit tests (28)
 	$(PY) -m pytest -q
 
-eval: pii policy rag ## PII, policy and RAG evaluations (no model needed)
+eval: pii policy rag erasure ## PII, policy and RAG evaluations and erasure (no model needed)
 
 pii: ## PII detector precision/recall
 	$(PY) eval/pii_eval.py
@@ -29,6 +29,9 @@ policy: ## Policy engine on 200,000 synthetic customers
 
 rag: ## RAG leakage with no filter, post-filter and pre-filter
 	$(PY) eval/rag_eval.py
+
+erasure: ## KVKK erasure: 50 requests over 200,000 customers, residual scan and untouched-row check
+	$(PY) eval/erasure_eval.py
 
 llm-up: ## Verify the model hash, then start llama-server on 127.0.0.1:61080 (Metal)
 	$(PY) -c "from sdai.guard import verify_model; import sys; sys.exit(0 if verify_model('$(MODEL)', '$(MODEL_SHA256)') else 'model hash mismatch: refusing to serve')"
