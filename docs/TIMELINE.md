@@ -147,3 +147,42 @@ earlier development and held-out v1 sets were the development data for v3. Times
   development ID question blocked. Left as found (ADR 0007).
 - The repository's `.venv` had been deleted by a disk clean-up outside this work while it ran; the evaluation
   used a fresh virtual environment with the pinned requirements under `/tmp`, removed afterwards.
+
+
+## Addition: data-subject requests under GDPR, CCPA/CPRA and KVKK (2026-11-23)
+
+Started from `df8125e`. Times are Europe/Istanbul. Nothing here is legal advice; the deadlines are one
+simplified engineering reading, see [the comparison](dsr-gdpr-ccpa-kvkk.md).
+
+| # | Commit | Time | Change |
+|---|---|---|---|
+| 1 | `e7fe5c3` | 2026-11-23 15:52 | dsr: deadline engine (GDPR calendar month, CCPA 45+45 and opt-out 15 business days, KVKK 30) and request workflow on the erasure estate; 47 tests |
+| 2 | `51087e7` | 2026-11-23 15:58 | dsr: CCPA opt-out needs identification only (CCR 7026(d)), not a verifiable request; 2 tests |
+| 3 | `f9a4c60` | 2026-11-23 15:58 | eval: DSR benchmark, 540 requests over 200,000 customers, residual scan, 820 identity attempts, deadline sweep; make dsr |
+| 4 | `620bb66` | 2026-11-23 15:58 | charts: DSR latency, deadline timelines and identity-check confusion matrix |
+| 5 | (this commit) | | docs: comparison of GDPR, CCPA/CPRA and KVKK requests, ADR 0008, README section 8 (figures 11-13), limitations, 98 tests |
+
+### Verification (measured on the M4 Pro)
+
+| Check | Result |
+|---|---|
+| Requests | 540 (3 laws × 3 types × 60) over 200,000 customers: 540 completed, 540 on time |
+| Latency, p50 / p95 | access 2.1 / 2.7 ms; consent withdrawal 1.5 / 2.1 ms; erasure 117 / 141 ms |
+| Erasure, 180 subjects | 0 residual rows outside 360 retained invoice rows; other customers' row counts unchanged in 5 stores |
+| Consent withdrawal, 180 subjects | 0 marketing rows left, 0 consent flags still true |
+| Identity attempts | 820 (280 genuine, 540 impostor), constructed to the rules: 0 false accepts, 0 false rejects |
+| Audit | 2,340 entries, chain verified, 0 raw identifiers |
+| Deadline sweep | 731 receipt dates; GDPR month 28 to 31 days, extended 89 to 92; 13 month-end clamps |
+| Tracker demo | 500 synthetic requests on 2027-06-15: 110 ok, 32 due soon, 358 overdue, 0.42 ms |
+| Unit tests | 98 passed (49 before this addition) |
+
+### Found while running it
+
+- A GDPR "one month" is 28 to 31 days after receipt; a flat 30 days would be off in 481 of the 731 swept
+  receipt dates (29 at 28 days, 31 at 29 days, 421 at 31 days).
+- Subjects sharing an identifier with another customer showed up again: 71 of the 180 erasure subjects, handled
+  by the leave-out-and-review rule of ADR 0006.
+- A CCPA opt-out of sale or sharing does not need to be a verifiable request on one reading of CCR tit. 11
+  s. 7026(d), so it is the one type where a single matching factor identifies the record (2 tests added).
+- The identity-check result (0 false accepts or rejects) depends on attempts written to the rules; it does not
+  measure real impostors.
