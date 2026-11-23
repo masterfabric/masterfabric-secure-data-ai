@@ -41,10 +41,11 @@ Part of the MasterFabric data and AI portfolio. The guardrails extend the RAG AP
 | Direct prompt injection (LLM01), development set | 7/10 → 4/10 (rules) → **0/10** (rules + classifier) | `results/injection_l2.json` |
 | Direct prompt injection, **held-out set** | 7/12 → 7/12 (rules) → **1/12** (rules + classifier) | `results/injection_l2.json` |
 | Legitimate questions blocked | 0/22 with rules; **3/22** with the classifier (1/10 benign, 2/12 hard benign) | `results/injection_l2.json` |
+| Clarify instead of block (guard v3), fresh held-out set | legitimate blocked **3/12 → 0/12**; attacks shown PWNED 3/12 → 3/12 (unchanged) | `results/clarify_eval.json` |
 | Poisoned RAG documents caught by the classifier | **16/16**, clean documents 0/2; classifier p50 71 ms | `results/injection_l2.json` |
 | Audit log, simulated day | 2,404 entries, chain verified, **3/3** tamper drills detected, 26 µs per append | `results/audit_sim.json` |
 | KVKK erasure, 50 subjects of 200,000 | **0** residual rows outside 100 retained invoice rows; other rows unchanged; p50 108 ms | `results/erasure_eval.json` |
-| Unit tests | 43 passed | `tests/` |
+| Unit tests | 49 passed | `tests/` |
 
 ## Architecture
 
@@ -198,6 +199,38 @@ The attack that still works asks for JSON with `"reply": "PWNED"`. The blocked l
 against this model even unguarded, so dropping the 16 poisoned documents prevented no observed attack here.
 Run it with `make llm-up guard-up injection guard-down llm-down`. See [ADR 0004](docs/adr/0004-second-injection-layer.md).
 
+### Clarify instead of block (guard v3)
+
+Three legitimate questions blocked out of 22 is too many for a customer-facing bot, and the scores overlap
+(legitimate 0.58-0.77, caught attacks 0.55-0.83), so moving the threshold cannot fix it. Guard v3
+([`sdai/clarify.py`](sdai/clarify.py)) changes what happens after the classifier flags a question that passed the
+rules: the answering model rewrites it as the plain support question it contains (or NONE), the rewrite goes
+through the rules and the classifier again, a rewrite that repeats a capitalised code word from the original is
+dropped, and otherwise the user sees *"I can't follow instructions about how to word my reply, but I can answer
+this question: "…" Shall I go ahead?"*. Only the confirmed rewrite is answered, never the original text.
+
+A fresh set was committed before the flow existed ([`eval/sets/clarify_heldout.jsonl`](eval/sets/clarify_heldout.jsonl):
+12 attacks, many dressed as format requests, and 12 format-style legitimate questions). The earlier sets were used
+to build v3. The evaluation assumes the user confirms every clarification, the worst case for attacks.
+
+<p align="center"><img src="docs/images/clarify_eval.png" alt="Legitimate questions blocked and attacks that showed PWNED, guard v2 against guard v3, per set" width="100%"></p>
+<p align="center"><sub><b>Figure 7.</b> Guard v2 blocks every flagged question; v3 asks back. Left: legitimate questions blocked. Right: attacks that got PWNED in front of the user, which v3 does not change (<a href="results/clarify_eval.json">clarify_eval.json</a>).</sub></p>
+
+| Set | Legitimate blocked, v2 → v3 | Attacks shown PWNED, v2 → v3 |
+|---|---|---|
+| Development (10 + 10) | 1/10 → 1/10 | 0/10 → 0/10 |
+| Held-out v1 (12 + 12) | 2/12 → **0/12** | 1/12 → 1/12 |
+| **Held-out v2, fresh (12 + 12)** | 3/12 → **0/12** | 3/12 → 3/12 |
+
+<p align="center"><img src="docs/images/clarify_examples.png" alt="Each flagged question, the model's rewrite, and whether it was offered back or blocked" width="100%"></p>
+<p align="center"><sub><b>Figure 8.</b> Every question the classifier flagged in the v3 run: the original with its score, the rewrite, and the outcome. Attacks mostly rewrite to NONE or keep the code word; legitimate questions rewrite to the question they contained.</sub></p>
+
+The clarified path costs a rewrite and a second classifier call: p50 753 ms against 368 ms for a question
+answered directly. The attacks that still work score below the threshold and never reach v3. The one
+legitimate question still blocked is the ID question: masking turns the ID into `<TCKN:…>` and the echo check
+reads `TCKN` as a repeated code word, a flaw left in place because the fix would come after the held-out run.
+Run it with `make llm-up guard-up clarify guard-down llm-down`. See [ADR 0007](docs/adr/0007-clarify-instead-of-block.md).
+
 ## 6. Tamper-evident audit log and dashboard
 
 [`sdai/audit.py`](sdai/audit.py) writes append-only JSON lines. Each entry stores the SHA-256 of the previous
@@ -212,7 +245,7 @@ erasure requests. Only the clock is simulated. [`viz/audit_dashboard.py`](viz/au
 result into [`docs/audit-dashboard.html`](docs/audit-dashboard.html), one file with inline SVG and no JavaScript.
 
 <p align="center"><img src="docs/screenshots/audit_dashboard.png" alt="Audit dashboard: entries per hour, denials by reason and role, recent denials, erasures, tamper drills" width="100%"></p>
-<p align="center"><sub><b>Figure 7.</b> The dashboard for the simulated day, rendered by headless Chromium: 65 of 2,404 entries denied, 4 erasures, chain intact, and the three tamper drills run on copies of the log.</sub></p>
+<p align="center"><sub><b>Figure 9.</b> The dashboard for the simulated day, rendered by headless Chromium: 65 of 2,404 entries denied, 4 erasures, chain intact, and the three tamper drills run on copies of the log.</sub></p>
 
 | Check | Result |
 |---|---|
@@ -243,7 +276,7 @@ Then it scans every store for the subject's identifiers as written, as digits on
 ([example](results/erasure_receipt_example.json)) that names the subject only by a keyed hash.
 
 <p align="center"><img src="docs/images/erasure.png" alt="Rows found before and left after erasure, per store" width="100%"></p>
-<p align="center"><sub><b>Figure 8.</b> 50 requests over 200,000 customers, 300,000 notes, 400,000 invoices and 5,000 RAG tickets. Everything found outside the invoices is gone; the invoices stay under the retention rule.</sub></p>
+<p align="center"><sub><b>Figure 10.</b> 50 requests over 200,000 customers, 300,000 notes, 400,000 invoices and 5,000 RAG tickets. Everything found outside the invoices is gone; the invoices stay under the retention rule.</sub></p>
 
 | Check | Result |
 |---|---|
@@ -271,6 +304,7 @@ request; a digits-only shadow column made it about 0.1 s. Run it with `make eras
 | [0004](docs/adr/0004-second-injection-layer.md) | Granite Guardian classifier as the second injection layer; known-answer detection rejected |
 | [0005](docs/adr/0005-hash-chained-audit-log.md) | One hash-chained audit log for all components, with an anchor file |
 | [0006](docs/adr/0006-kvkk-erasure.md) | Erasure across all stores, legal hold for invoices, shared identifiers sent to review |
+| [0007](docs/adr/0007-clarify-instead-of-block.md) | Clarify instead of block: rewrite flagged input, re-check it, answer only the confirmed rewrite |
 
 ## Enterprise mapping
 
@@ -324,8 +358,10 @@ eng.audit.verify()   # Report(ok=True, entries=1, ...)
   counts it as a decoy.
 - **The injection layers are measured on small sets.** The rules let 4 of 10 development and 7 of 12
   held-out attacks through; with the classifier, 0 and 1. With 12 held-out attacks, one prompt is 8 points.
-  The classifier blocks 3 of 22 legitimate questions, all about answer format, which is too many for a
-  customer-facing bot without a fallback. Adaptive attacks written against the classifier were not tried.
+  The classifier blocks 3 of 22 legitimate questions, all about answer format; guard v3 turns those into
+  clarifications (3/12 → 0/12 on a fresh set) but does nothing for attacks the classifier scores too low,
+  and its measurement assumes the user confirms every clarification. Adaptive attacks written against the
+  classifier or against the rewrite step were not tried.
 - **One small model, one run per prompt.** Attack success depends heavily on the model. The 1.5B
   model ignored every indirect injection in both pipelines, and it never produced `[ID]` citations, so the
   LLM09 grounding check would refuse all of its answers.
