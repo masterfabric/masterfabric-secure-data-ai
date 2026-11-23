@@ -9,3 +9,4 @@
 | [0005](0005-hash-chained-audit-log.md) | Audit log: SHA-256 hash chain, anchor file, PII masked before writing |
 | [0006](0006-kvkk-erasure.md) | KVKK erasure across all stores, legal hold for invoices, residual scan and receipt |
 | [0007](0007-clarify-instead-of-block.md) | Clarify instead of block: rewrite flagged input, re-check, answer only the confirmed rewrite |
+| [0008](0008-dsr-deadline-tracking.md) | Data-subject request deadlines: one rule table, pure date functions, calendar-month clamping, audited transitions |
