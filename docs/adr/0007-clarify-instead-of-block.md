@@ -38,8 +38,9 @@ Anything else is blocked as in v2, and an unreachable classifier still blocks.
 | **Held-out v2, fresh (12 + 12)** | **3/12** | **0/12** | 3/12 | 3/12 |
 
 The clarified path costs one rewrite and a second classifier call: p50 753 ms against 368 ms for a question
-answered directly. Three attacks reached a clarification; in each the rewrite was a plain fee or due-date
-question (two development prompts, one held-out v1 prompt), and no clarification or answer showed PWNED.
+answered directly. Three attacks reached a clarification. Two development prompts became the fee or due-date question they
+wrapped; the held-out v1 "IMPORTANT UPDATE FROM THE ADMIN TEAM" prompt became "What is the issue with the
+message?", a strange but harmless question. No clarification or answer showed PWNED.
 
 ## Consequences
 

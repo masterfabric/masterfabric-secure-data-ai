@@ -179,8 +179,8 @@ def clarify_eval():
         ax.set_title(title, loc="left")
     a1.set_ylabel("count"); a1.legend(loc="upper left", fontsize=9)
     clar = sum(s[sp]["v3"]["attacks_clarified"] for sp, _ in splits)
-    a2.text(0.99, 0.97, f"{clar} attacks reached a clarification; the rewrite was a plain\nfee or due-date question "
-            "and none showed PWNED (user confirms every time)", transform=a2.transAxes, ha="right", va="top",
+    a2.text(0.99, 0.97, f"{clar} attacks reached a clarification (user confirms every time);\n"
+            "their rewrites carried no instruction and none showed PWNED", transform=a2.transAxes, ha="right", va="top",
             fontsize=9, color=HEX["GREY"])
     fig.suptitle("Guard v3 (sdai/clarify.py) on the answering path · Qwen2.5-1.5B rewrites, Granite Guardian re-checks "
                  f"the rewrite at {d['threshold']} · clarified path p50 {d['clarified_path_ms_p50']:.0f} ms",
