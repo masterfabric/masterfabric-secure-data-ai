@@ -158,8 +158,67 @@ def erasure():
     fig.tight_layout(); fig.savefig(IMG / "erasure.png"); plt.close(fig)
 
 
+def clarify_eval():
+    d = J("clarify_eval")
+    s = d["summary"]
+    splits = [("dev", "development\n10 + 10"), ("held-out v1", "held-out v1\n12 + 12"),
+              ("held-out v2", "held-out v2 (fresh)\n12 + 12")]
+    modes = [("v2", "v2: block what the classifier flags", HEX["ORANGE"]),
+             ("v3", "v3: clarify, then answer the rewrite", HEX["GREEN"])]
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(15, 4.9))
+    for ax, key, n_key, title in ((a1, "benign_blocked", "benign", "Legitimate questions blocked"),
+                                  (a2, "attacks_succeeded", "attacks", "Direct attacks that got PWNED shown")):
+        for j, (m, lab, col) in enumerate(modes):
+            xs = [i + (j - 0.5) * 0.36 for i in range(len(splits))]
+            vals = [s[sp][m][key] for sp, _ in splits]
+            ax.bar(xs, vals, 0.34, color=col, label=lab)
+            for x, sp, v in zip(xs, splits, vals):
+                ax.text(x, v + 0.08, f"{v}/{s[sp[0]][m][n_key]}", ha="center", fontsize=10)
+        ax.set_xticks(range(len(splits)), [l for _, l in splits])
+        ax.set_ylim(0, 4.2)
+        ax.set_title(title, loc="left")
+    a1.set_ylabel("count"); a1.legend(loc="upper left", fontsize=9)
+    clar = sum(s[sp]["v3"]["attacks_clarified"] for sp, _ in splits)
+    a2.text(0.99, 0.97, f"{clar} attacks reached a clarification; the rewrite was a plain\nfee or due-date question "
+            "and none showed PWNED (user confirms every time)", transform=a2.transAxes, ha="right", va="top",
+            fontsize=9, color=HEX["GREY"])
+    fig.suptitle("Guard v3 (sdai/clarify.py) on the answering path · Qwen2.5-1.5B rewrites, Granite Guardian re-checks "
+                 f"the rewrite at {d['threshold']} · clarified path p50 {d['clarified_path_ms_p50']:.0f} ms",
+                 x=0.01, ha="left", fontsize=11, color=HEX["GREY"])
+    fig.tight_layout(); fig.savefig(IMG / "clarify_eval.png"); plt.close(fig)
+
+
+def clarify_examples():
+    d = J("clarify_eval")
+    rows = [r for r in d["rows"] if r["mode"] == "v3" and "classifier (" in r["reason"]]
+    rows.sort(key=lambda r: (r["kind"] != "benign", r["status"] != "clarified", r["split"]))
+    W, rh, top = 1900, 46, 118
+    img, dr = canvas(W, top + rh * (len(rows) + 1) + 40)
+    dr.text((40, 30), "Every question the classifier flagged, and what guard v3 did with it", font=font(30, 700), fill=WHITE)
+    dr.text((40, 72), "Original message → the model's rewrite → outcome. Rewrites are re-checked by the rules and the "
+            "classifier; a rewrite that repeats a capitalised code word is not offered.", font=font(17), fill=GREY)
+    cols = [(40, "set"), (210, "kind"), (300, "original message (score)"), (950, "rewrite"), (1440, "outcome")]
+    y = top
+    for x, h in cols:
+        dr.text((x, y), h, font=font(16, 700), fill=GREY)
+    y += rh
+    for r in rows:
+        dr.rectangle([30, y - 8, W - 30, y + rh - 14], fill=PANEL)
+        score = r["reason"].split("(")[1].split(")")[0]
+        rw = (r.get("rewrite") or "")[:52]
+        if r["status"] == "clarified":
+            out, col = "offered, answered: " + r["shown"].split("\n---\n")[-1][:34], GREEN
+        else:
+            out, col = "blocked: " + r["reason"].split("; ", 1)[-1][:40], (ORANGE if r["kind"] == "benign" else GREY)
+        vals = [r["split"], r["kind"], f"{r['prompt'][:62]} ({score})", rw, out]
+        for (x, _), v in zip(cols, vals):
+            dr.text((x, y), v, font=font(15, mono=(x in (300, 950))), fill=col if x == 1440 else WHITE)
+        y += rh
+    img.save(IMG / "clarify_examples.png")
+
+
 if __name__ == "__main__":
     IMG.mkdir(parents=True, exist_ok=True)
-    for f in (pii, rag, owasp, role_views, injection_layers, erasure):
+    for f in (pii, rag, owasp, role_views, injection_layers, erasure, clarify_eval, clarify_examples):
         f()
     print("charts written")
