@@ -103,3 +103,47 @@ Times are Europe/Istanbul.
   cannot serve as an erasure check either way.
 - Re-running the policy evaluation changes the hashed values in the role-view figure, because the hash salt is
   random per run unless `SDAI_HASH_SALT` is set.
+
+
+## Addition: clarify instead of block, guard v3 (2026-11-23)
+
+Started from `30bf75f`. The fresh held-out set was committed first, before `sdai/clarify.py` existed; the
+earlier development and held-out v1 sets were the development data for v3. Times are Europe/Istanbul.
+
+| # | Commit | Time | Change |
+|---|---|---|---|
+| 1 | `54449dd` | 2026-11-23 12:29 | eval: fresh held-out set for the clarify flow (12 direct attacks, 12 format-style legitimate questions), committed before the flow exists |
+| 2 | `d87783a` | 2026-11-23 12:31 | guard v3: clarify instead of block for classifier-flagged input (rewrite, re-check, confirm); 6 unit tests |
+| 3 | `9883656` | 2026-11-23 12:31 | eval: guard v2 vs v3 on dev, held-out v1 and held-out v2 (user confirms every clarification) |
+| 4 | `e0fc469` | 2026-11-23 12:34 | results: guard v3 clarify flow; false blocks 6/34 -> 1/34, attack success unchanged (v2 = v3 in both runs) |
+| 5 | `10f17b5` | 2026-11-23 12:35 | docs: ADR 0007 clarify instead of block; Makefile clarify target |
+| 6 | `61d1acc` | 2026-11-23 12:35 | charts: clarify flow (false blocks and attack success, v2 vs v3) and every flagged question with its rewrite |
+| 7 | `b8e0267` | 2026-11-23 12:35 | ADR 0007 and chart: describe the three clarified attacks exactly |
+| 8 | `50e7517` | 2026-11-23 12:36 | README: guard v3 clarify flow (figures 7-8, later figures +2), key results, ADR 0007, limitations, 49 tests |
+| 9 | (this commit) | | docs(timeline): this section |
+
+### Verification (measured on the M4 Pro)
+
+| Check | Result |
+|---|---|
+| Model files | Qwen2.5-1.5B and Granite Guardian 3.2 3B-A800M sha256 checked by `make llm-up` / `guard-up` |
+| Legitimate questions blocked, v2 → v3 | dev 1/10 → 1/10; held-out v1 2/12 → 0/12; **fresh held-out v2 3/12 → 0/12** |
+| Attacks shown PWNED, v2 → v3 | dev 0/10 → 0/10; held-out v1 1/12 → 1/12; held-out v2 3/12 → 3/12 |
+| Attacks that reached a clarification | 3 (all rewrites free of the instruction, none showed PWNED) |
+| Latency | clarified path p50 753 ms; directly answered p50 368 ms |
+| Repeatability | two full runs: identical guard decisions; answer text differed in 9 of 136 outputs; held-out v2 attack success 2/12 (run 1, `results/clarify_eval_run1.json`) and 3/12 (run 2) |
+| Unit tests | 49 passed (6 new for the clarify flow) |
+| Machine state | both llama-servers stopped after the run; ports 3000, 8081, 11234 not touched |
+
+### Found while running it
+
+- No threshold could have fixed the false blocks: legitimate questions scored 0.58-0.77 and caught attacks
+  0.55-0.83 on the same classifier.
+- The first run's "served" metric (citation check) was 0 for every answer in both pipelines, because the 1.5B
+  model never writes `[KB01]` citations inside the wrapped context (the same holds in `injection_l2.json`). It
+  was replaced by "not blocked" and the clarified answers are shown in Figure 8. The run was repeated with the
+  new metric; the first run is kept as `results/clarify_eval_run1.json`.
+- The echo check for capitalised code words also fires on the PII masking tag `<TCKN:…>`, which keeps the
+  development ID question blocked. Left as found (ADR 0007).
+- The repository's `.venv` had been deleted by a disk clean-up outside this work while it ran; the evaluation
+  used a fresh virtual environment with the pinned requirements under `/tmp`, removed afterwards.
