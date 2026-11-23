@@ -8,7 +8,7 @@ MODEL_SHA256 := 6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e
 GUARD_MODEL ?= $(HOME)/.cache/mf-models/granite-guardian-3.2-3b-a800m-Q4_K_M.gguf
 GUARD_SHA256 := 72735ad1cb9832df3141a4477cb1035228ba029e0b9076802305a07c870ccfb5
 
-.PHONY: help venv test eval pii policy rag llm-up owasp llm-down guard-up guard-down injection erasure audit-sim dashboard charts
+.PHONY: help venv test eval pii policy rag llm-up owasp llm-down guard-up guard-down injection clarify erasure audit-sim dashboard charts
 
 help: ## Show targets
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-10s\033[0m %s\n",$$1,$$2}'
@@ -60,6 +60,9 @@ guard-down: ## Stop the classifier started by guard-up
 
 injection: ## Guard v1 (rules) vs v2 (rules + classifier) on dev and held-out prompts; needs llm-up and guard-up
 	$(PY) eval/injection_l2.py
+
+clarify: ## Guard v2 (block) vs v3 (clarify instead of block) on dev, held-out v1 and v2; needs llm-up and guard-up
+	$(PY) eval/clarify_eval.py
 
 charts: ## Charts, diagram and hero from results/*.json
 	cd viz && ../$(PY) make_charts.py && ../$(PY) make_diagrams.py && ../$(PY) make_hero.py

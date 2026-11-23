@@ -8,3 +8,4 @@
 | [0004](0004-second-injection-layer.md) | Second prompt-injection layer: Granite Guardian classifier after the rules |
 | [0005](0005-hash-chained-audit-log.md) | Audit log: SHA-256 hash chain, anchor file, PII masked before writing |
 | [0006](0006-kvkk-erasure.md) | KVKK erasure across all stores, legal hold for invoices, residual scan and receipt |
+| [0007](0007-clarify-instead-of-block.md) | Clarify instead of block: rewrite flagged input, re-check, answer only the confirmed rewrite |
