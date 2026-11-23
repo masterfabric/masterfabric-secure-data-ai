@@ -217,8 +217,116 @@ def clarify_examples():
     img.save(IMG / "clarify_examples.png")
 
 
+def dsr_latency():
+    d = J("dsr_bench")
+    lat, sc = d["latency_ms"], d["scale"]
+    types = [("access", "access", HEX["ICE"]), ("consent_withdrawal", "consent withdrawal\n(CCPA: opt-out)", HEX["GREEN"]),
+             ("erasure", "erasure", HEX["ORANGE"])]
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(15, 4.9), gridspec_kw={"width_ratios": [1, 1.15]})
+    for off, q, alpha in ((-0.2, "p50", 1.0), (0.2, "p95", 0.55)):
+        for i, (t, _, col) in enumerate(types):
+            v = lat["by_request_type"][t]["total"][q]
+            a1.bar(i + off, v, 0.38, color=col, alpha=alpha)
+            a1.text(i + off, v * 1.12, f"{v:.1f}", ha="center", fontsize=10)
+    a1.set_yscale("log"); a1.set_ylim(0.5, 600)
+    a1.set_xticks(range(3), [lab for _, lab, _ in types])
+    a1.set_ylabel("end-to-end time per request (ms, log scale)")
+    a1.set_title("Per request type: p50 (solid) and p95 (light)", loc="left")
+    laws = ["gdpr", "ccpa", "kvkk"]
+    for j, (t, lab, col) in enumerate(types):
+        xs = [i + (j - 1) * 0.27 for i in range(3)]
+        vals = [lat["by_law_and_type"][f"{lw}/{t}"]["total"]["p50"] for lw in laws]
+        a2.bar(xs, vals, 0.26, color=col, label=lab.replace("\n", " "))
+        for x, v in zip(xs, vals):
+            a2.text(x, v * 1.12, f"{v:.1f}", ha="center", fontsize=9)
+    a2.set_yscale("log"); a2.set_ylim(0.5, 600)
+    a2.set_xticks(range(3), [lw.upper() for lw in laws])
+    a2.set_ylabel("p50 (ms, log scale)")
+    a2.set_title("Per law and type: p50", loc="left")
+    a2.legend(loc="upper right", fontsize=9, ncol=3)
+    fig.suptitle(f"DSR workflow: intake, identity check, processing, response · {sc['requests_total']} requests "
+                 f"({sc['requests_per_law_and_type']} per law and type) over {sc['customers']:,} customers · {d['environment']['cpu_brand']}",
+                 x=0.01, ha="left", fontsize=11, color=HEX["GREY"])
+    fig.tight_layout(); fig.savefig(IMG / "dsr_latency.png"); plt.close(fig)
+
+
+def dsr_deadlines():
+    import matplotlib.dates as mdates
+    from datetime import date
+    d = J("dsr_bench")["deadlines"]
+    rows = [("GDPR, 1 month (+2 ext.)", "gdpr/access", HEX["GREEN"]), ("CCPA, 45 days (+45 ext.)", "ccpa/access", HEX["ICE"]),
+            ("CCPA opt-out, 15 business days", "ccpa/consent_withdrawal", HEX["PURPLE"]), ("KVKK, 30 days", "kvkk/access", HEX["ORANGE"])]
+    fig = plt.figure(figsize=(14, 9.2))
+    gs = fig.add_gridspec(3, 1, height_ratios=[1, 1, 0.9], hspace=0.55)
+    for k, rec in enumerate(("2028-01-31", "2027-11-15")):
+        a = fig.add_subplot(gs[k])
+        r0 = date.fromisoformat(rec); x0 = mdates.date2num(r0)
+        for i, (lab, key, col) in enumerate(rows):
+            y = len(rows) - 1 - i
+            base = date.fromisoformat(d["samples"][rec][key + "/base"])
+            a.barh(y, (base - r0).days, left=x0, height=0.55, color=col)
+            a.text(mdates.date2num(base) + 1, y, f"{base:%a %d %b %Y}", va="center", fontsize=10)
+            if key + "/extended" in d["samples"][rec]:
+                ext = date.fromisoformat(d["samples"][rec][key + "/extended"])
+                a.barh(y, (ext - base).days, left=mdates.date2num(base), height=0.55, color=col, alpha=0.35, hatch="//", edgecolor=HEX["PANEL"])
+                a.text(mdates.date2num(ext) + 1, y, f"{ext:%a %d %b %Y} (extended)", va="center", fontsize=10, color=HEX["GREY"])
+        a.axvline(x0, color=HEX["WHITE"], lw=1.2)
+        a.set_yticks(range(len(rows)), [r[0] for r in reversed(rows)])
+        a.xaxis_date(); a.xaxis.set_major_formatter(mdates.DateFormatter("%d %b %Y"))
+        a.set_xlim(x0 - 3, x0 + 115); a.set_ylim(-0.6, len(rows) - 0.4)
+        a.set_title(f"Request received {r0:%a %d %b %Y}: due dates by rule (solid = first period, hatched = extension)", loc="left")
+    a = fig.add_subplot(gs[2])
+    days = d["gdpr_base_days_to_due_by_receipt_2028"]
+    start = mdates.date2num(date(2028, 1, 1))
+    a.step([start + i for i in range(len(days))], days, where="post", color=HEX["GREEN"], lw=2)
+    a.xaxis_date(); a.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
+    a.set_yticks([28, 29, 30, 31]); a.set_ylim(27.5, 31.6)
+    a.set_ylabel("calendar days to due")
+    g = d["rules"]["gdpr/access/base"]
+    a.set_title(f"GDPR one month, by receipt date in 2028: {g['min_days_to_due']} to {g['max_days_to_due']} calendar days "
+                f"(2027 and 2028 together: {g['month_end_clamps']} of {g['receipt_dates']} receipt dates clamp to a month end)", loc="left")
+    fig.suptitle("Response deadlines from sdai/deadlines.py (day of receipt not counted; weekends and holidays not modelled)",
+                 x=0.01, y=0.97, ha="left", fontsize=11, color=HEX["GREY"])
+    fig.savefig(IMG / "dsr_deadlines.png"); plt.close(fig)
+
+
+def dsr_verification():
+    import numpy as np
+    v = J("dsr_bench")["verification"]
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(15, 5.4), gridspec_kw={"width_ratios": [0.8, 1.6]})
+    m = np.array([[v["TA"], v["FR"]], [v["FA"], v["TR"]]])
+    a1.imshow(m, cmap="Blues", vmin=0, vmax=m.max() * 1.6)
+    a1.grid(False)
+    names = [["true accept", "false reject"], ["false accept", "true reject"]]
+    for i in range(2):
+        for j in range(2):
+            a1.text(j, i, f"{m[i, j]}\n{names[i][j]}", ha="center", va="center", fontsize=14,
+                    color=HEX["BG"])  # light cells: dark text
+    a1.set_xticks([0, 1], ["accepted", "rejected"]); a1.set_yticks([0, 1], ["should accept", "should reject"])
+    a1.set_title(f"{v['attempts']} labelled attempts · accuracy {v['accuracy']:.3f}\nFAR {v['FAR']:.3f} · FRR {v['FRR']:.3f}", loc="left")
+    cats = sorted(v["by_category"].items(), key=lambda kv: (kv[1]["expected"] != "accept", kv[0]))
+    for i, (c, x) in enumerate(cats):
+        right = x["accepted"] if x["expected"] == "accept" else x["attempts"] - x["accepted"]
+        col = HEX["GREEN"] if x["expected"] == "accept" else HEX["ORANGE"]
+        a2.barh(i, x["attempts"], color=col, alpha=0.35)
+        a2.barh(i, right, color=col)
+        a2.text(x["attempts"] + 1, i, f"{right}/{x['attempts']}", va="center", fontsize=9)
+    a2.set_yticks(range(len(cats)), [c for c, _ in cats], fontsize=9); a2.invert_yaxis()
+    a2.set_xlabel("attempts (solid: decided as expected)")
+    a2.set_title("By category: genuine (green) must be accepted, impostors (orange) rejected", loc="left")
+    fig.suptitle("Identity check: two matching factors (CCPA opt-out: one, identification only) against crm.customers; "
+                 "phone formats and e-mail case are normalised", x=0.01, ha="left", fontsize=11, color=HEX["GREY"])
+    fig.tight_layout(); fig.savefig(IMG / "dsr_verification.png"); plt.close(fig)
+
+
+CHARTS = (pii, rag, owasp, role_views, injection_layers, erasure, clarify_eval, clarify_examples,
+          dsr_latency, dsr_deadlines, dsr_verification)
+
 if __name__ == "__main__":
+    import sys
     IMG.mkdir(parents=True, exist_ok=True)
-    for f in (pii, rag, owasp, role_views, injection_layers, erasure, clarify_eval, clarify_examples):
-        f()
-    print("charts written")
+    by_name = {f.__name__: f for f in CHARTS}
+    wanted = sys.argv[1:] or list(by_name)  # `make_charts.py dsr_latency dsr_deadlines` builds only those
+    for n in wanted:
+        by_name[n]()
+    print("charts written:", ", ".join(wanted))
