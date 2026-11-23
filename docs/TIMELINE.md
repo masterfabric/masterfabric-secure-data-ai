@@ -160,7 +160,9 @@ simplified engineering reading, see [the comparison](dsr-gdpr-ccpa-kvkk.md).
 | 2 | `51087e7` | 2026-11-23 15:58 | dsr: CCPA opt-out needs identification only (CCR 7026(d)), not a verifiable request; 2 tests |
 | 3 | `f9a4c60` | 2026-11-23 15:58 | eval: DSR benchmark, 540 requests over 200,000 customers, residual scan, 820 identity attempts, deadline sweep; make dsr |
 | 4 | `620bb66` | 2026-11-23 15:58 | charts: DSR latency, deadline timelines and identity-check confusion matrix |
-| 5 | (this commit) | | docs: comparison of GDPR, CCPA/CPRA and KVKK requests, ADR 0008, README section 8 (figures 11-13), limitations, 98 tests |
+| 5 | `ef4ef9f` | 2026-11-23 16:02 | docs: GDPR, CCPA/CPRA and KVKK request flows and deadlines compared (not legal advice); ADR 0008 DSR deadline tracking |
+| 6 | `fe90c23` | 2026-11-23 16:02 | README: section 8 data-subject requests (figures 11-13), key results, limitations, 98 tests; timeline entry |
+| 7 | (this commit) | | README: DSR request-flow diagram in section 8, flat-30-days comparison; docs(timeline): real hashes for rows 5-6 |
 
 ### Verification (measured on the M4 Pro)
 

@@ -315,6 +315,21 @@ two must match; for a CCPA opt-out one is enough, on one reading of CCR tit. 11 
 to the audit log with the subject as a keyed pseudonym. Work that does not verify as done stays open in the
 tracker (`ok` / `due_soon` / `overdue`, warning 7 days ahead).
 
+```mermaid
+flowchart LR
+  IN[Intake<br/>receipt date · law · type] --> DL[Deadline engine<br/>GDPR 1 calendar month · CCPA 45 days<br/>opt-out 15 business days · KVKK 30 days]
+  DL --> V{Verify identity<br/>2 factors · CCPA opt-out 1}
+  V -->|rejected| NI[Needs info] --> V
+  NI -->|no proof| RJ[Rejected]
+  V -->|verified| P[Process<br/>access report · erasure · consent / opt-out]
+  P -->|post-checks fail| P
+  P -->|post-checks pass| R[Respond<br/>on time vs due date]
+  DL -.->|notice on or before due date| EX[Extension<br/>GDPR +2 months · CCPA +45 days]
+  EX -.-> P
+  DL -.-> T[Tracker<br/>ok · due soon 7 days · overdue]
+  IN & V & P & R & RJ -.->|every transition| L[(audit log<br/>SHA-256 chain)]
+```
+
 | | GDPR | CCPA/CPRA | KVKK |
 |---|---|---|---|
 | Base deadline | 1 calendar month (Art. 12(3)) | 45 days (1798.130(a)(2)); opt-out 15 business days (s. 7026(f)) | 30 days (Art. 13(2)) |
@@ -339,7 +354,7 @@ tracker (`ok` / `due_soon` / `overdue`, warning 7 days ahead).
 | Consent withdrawal, 180 subjects | 0 marketing-list rows left, 0 consent flags still true |
 | Identity attempts (820) | accepted 280 genuine, rejected 540 impostor: 0 false accepts, 0 false rejects, **constructed to the rules** |
 | Audit log | 2,340 entries, chain verified, 0 raw TCKN, e-mail, phone, IBAN or card number |
-| Deadline sweep (731 receipt dates) | GDPR month 28-31 days out, with 13 month-end clamps; deadline call 0.4-0.8 µs (15 business days: 3.6 µs) |
+| Deadline sweep (731 receipt dates) | GDPR month 28-31 days out, with 13 month-end clamps; a flat 30 days would differ from the calendar month on 481 of 731 receipt dates; deadline call 0.4-0.8 µs (15 business days: 3.6 µs) |
 | Tracker demo (500 synthetic requests, today 2027-06-15) | 110 ok, 32 due soon, 358 overdue, sorted by due date, 0.42 ms |
 
 Measured on an Apple M4 Pro with 24 GB, Python 3.12.15, DuckDB 2.0.1, seed 42, on 2026-11-23, with
