@@ -8,7 +8,7 @@ MODEL_SHA256 := 6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e
 GUARD_MODEL ?= $(HOME)/.cache/mf-models/granite-guardian-3.2-3b-a800m-Q4_K_M.gguf
 GUARD_SHA256 := 72735ad1cb9832df3141a4477cb1035228ba029e0b9076802305a07c870ccfb5
 
-.PHONY: help venv test eval pii policy rag llm-up owasp llm-down guard-up guard-down injection clarify erasure audit-sim dashboard charts
+.PHONY: help venv test eval pii policy rag llm-up owasp llm-down guard-up guard-down injection clarify erasure dsr audit-sim dashboard charts
 
 help: ## Show targets
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-10s\033[0m %s\n",$$1,$$2}'
@@ -16,10 +16,10 @@ help: ## Show targets
 venv: ## Create .venv with uv and the pinned dependencies
 	uv venv -p 3.12 .venv && uv pip install -p .venv -r requirements.txt
 
-test: ## Unit tests (49)
+test: ## Unit tests (98)
 	$(PY) -m pytest -q
 
-eval: pii policy rag erasure ## PII, policy and RAG evaluations and erasure (no model needed)
+eval: pii policy rag erasure dsr ## PII, policy and RAG evaluations and erasure (no model needed)
 
 pii: ## PII detector precision/recall
 	$(PY) eval/pii_eval.py
@@ -32,6 +32,9 @@ rag: ## RAG leakage with no filter, post-filter and pre-filter
 
 erasure: ## KVKK erasure: 50 requests over 200,000 customers, residual scan and untouched-row check
 	$(PY) eval/erasure_eval.py
+
+dsr: ## DSR workflow benchmark: 540 requests (GDPR, CCPA, KVKK x access, erasure, consent) over 200,000 customers, identity-check confusion matrix, deadline sweep
+	$(PY) eval/dsr_bench.py
 
 audit-sim: ## One simulated day written to the chained audit log by the real components, plus tamper drills
 	$(PY) eval/audit_sim.py

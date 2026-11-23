@@ -1,0 +1,1317 @@
+{
+  "environment": {
+    "platform": "macOS-27.2.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "processor": "arm",
+    "python": "3.12.15",
+    "duckdb": "2.0.1",
+    "cpu_brand": "Apple M4 Pro",
+    "ram_gb": 24.0,
+    "command": ".venv/bin/python eval/dsr_bench.py",
+    "seed": 42,
+    "date_run": "2026-11-23T15:56:27+03:00"
+  },
+  "scale": {
+    "customers": 200000,
+    "call_notes": 300000,
+    "invoices": 400000,
+    "rag_tickets": 5000,
+    "estate_build_s": 1.7,
+    "requests_per_law_and_type": 60,
+    "requests_total": 540,
+    "erasure_requests": 180,
+    "erasure_subjects_with_rag_tickets": 92,
+    "note": "same estate as eval/erasure_eval.py (build_estate defaults); every request has its own customer"
+  },
+  "latency_ms": {
+    "by_request_type": {
+      "access": {
+        "total": {
+          "n": 180,
+          "p50": 2.116,
+          "p95": 2.744,
+          "mean": 2.174,
+          "max": 2.91
+        },
+        "intake": {
+          "n": 180,
+          "p50": 0.075,
+          "p95": 0.193,
+          "mean": 0.104,
+          "max": 0.233
+        },
+        "verify": {
+          "n": 180,
+          "p50": 0.284,
+          "p95": 0.558,
+          "mean": 0.344,
+          "max": 0.605
+        },
+        "process": {
+          "n": 180,
+          "p50": 1.721,
+          "p95": 2.037,
+          "mean": 1.718,
+          "max": 2.311
+        },
+        "respond": {
+          "n": 180,
+          "p50": 0.007,
+          "p95": 0.011,
+          "mean": 0.008,
+          "max": 0.018
+        }
+      },
+      "erasure": {
+        "total": {
+          "n": 180,
+          "p50": 117.34,
+          "p95": 141.359,
+          "mean": 117.762,
+          "max": 153.457
+        },
+        "intake": {
+          "n": 180,
+          "p50": 0.151,
+          "p95": 0.209,
+          "mean": 0.151,
+          "max": 0.257
+        },
+        "verify": {
+          "n": 180,
+          "p50": 0.272,
+          "p95": 0.393,
+          "mean": 0.282,
+          "max": 0.545
+        },
+        "process": {
+          "n": 180,
+          "p50": 116.971,
+          "p95": 141.015,
+          "mean": 117.316,
+          "max": 152.688
+        },
+        "respond": {
+          "n": 180,
+          "p50": 0.012,
+          "p95": 0.016,
+          "mean": 0.013,
+          "max": 0.022
+        }
+      },
+      "consent_withdrawal": {
+        "total": {
+          "n": 180,
+          "p50": 1.515,
+          "p95": 2.077,
+          "mean": 1.604,
+          "max": 4.861
+        },
+        "intake": {
+          "n": 180,
+          "p50": 0.074,
+          "p95": 0.197,
+          "mean": 0.108,
+          "max": 0.434
+        },
+        "verify": {
+          "n": 180,
+          "p50": 0.279,
+          "p95": 0.552,
+          "mean": 0.343,
+          "max": 0.621
+        },
+        "process": {
+          "n": 180,
+          "p50": 1.129,
+          "p95": 1.361,
+          "mean": 1.146,
+          "max": 4.082
+        },
+        "respond": {
+          "n": 180,
+          "p50": 0.008,
+          "p95": 0.012,
+          "mean": 0.008,
+          "max": 0.025
+        }
+      }
+    },
+    "by_law_and_type": {
+      "gdpr/access": {
+        "total": {
+          "n": 60,
+          "p50": 2.129,
+          "p95": 2.717,
+          "mean": 2.174,
+          "max": 2.91
+        },
+        "intake": {
+          "n": 60,
+          "p50": 0.077,
+          "p95": 0.197,
+          "mean": 0.104,
+          "max": 0.233
+        },
+        "verify": {
+          "n": 60,
+          "p50": 0.284,
+          "p95": 0.551,
+          "mean": 0.337,
+          "max": 0.605
+        },
+        "process": {
+          "n": 60,
+          "p50": 1.738,
+          "p95": 2.037,
+          "mean": 1.725,
+          "max": 2.195
+        },
+        "respond": {
+          "n": 60,
+          "p50": 0.009,
+          "p95": 0.012,
+          "mean": 0.009,
+          "max": 0.018
+        }
+      },
+      "gdpr/erasure": {
+        "total": {
+          "n": 60,
+          "p50": 117.977,
+          "p95": 137.402,
+          "mean": 117.218,
+          "max": 153.457
+        },
+        "intake": {
+          "n": 60,
+          "p50": 0.148,
+          "p95": 0.211,
+          "mean": 0.152,
+          "max": 0.24
+        },
+        "verify": {
+          "n": 60,
+          "p50": 0.265,
+          "p95": 0.421,
+          "mean": 0.282,
+          "max": 0.545
+        },
+        "process": {
+          "n": 60,
+          "p50": 117.554,
+          "p95": 136.924,
+          "mean": 116.768,
+          "max": 152.688
+        },
+        "respond": {
+          "n": 60,
+          "p50": 0.015,
+          "p95": 0.018,
+          "mean": 0.015,
+          "max": 0.022
+        }
+      },
+      "gdpr/consent_withdrawal": {
+        "total": {
+          "n": 60,
+          "p50": 1.527,
+          "p95": 2.23,
+          "mean": 1.63,
+          "max": 2.291
+        },
+        "intake": {
+          "n": 60,
+          "p50": 0.078,
+          "p95": 0.197,
+          "mean": 0.11,
+          "max": 0.203
+        },
+        "verify": {
+          "n": 60,
+          "p50": 0.285,
+          "p95": 0.56,
+          "mean": 0.356,
+          "max": 0.621
+        },
+        "process": {
+          "n": 60,
+          "p50": 1.147,
+          "p95": 1.441,
+          "mean": 1.156,
+          "max": 1.615
+        },
+        "respond": {
+          "n": 60,
+          "p50": 0.008,
+          "p95": 0.011,
+          "mean": 0.008,
+          "max": 0.025
+        }
+      },
+      "ccpa/access": {
+        "total": {
+          "n": 60,
+          "p50": 2.077,
+          "p95": 2.659,
+          "mean": 2.152,
+          "max": 2.788
+        },
+        "intake": {
+          "n": 60,
+          "p50": 0.074,
+          "p95": 0.192,
+          "mean": 0.099,
+          "max": 0.2
+        },
+        "verify": {
+          "n": 60,
+          "p50": 0.279,
+          "p95": 0.542,
+          "mean": 0.333,
+          "max": 0.588
+        },
+        "process": {
+          "n": 60,
+          "p50": 1.71,
+          "p95": 2.009,
+          "mean": 1.713,
+          "max": 2.311
+        },
+        "respond": {
+          "n": 60,
+          "p50": 0.007,
+          "p95": 0.01,
+          "mean": 0.007,
+          "max": 0.012
+        }
+      },
+      "ccpa/erasure": {
+        "total": {
+          "n": 60,
+          "p50": 115.228,
+          "p95": 143.473,
+          "mean": 117.793,
+          "max": 149.107
+        },
+        "intake": {
+          "n": 60,
+          "p50": 0.157,
+          "p95": 0.207,
+          "mean": 0.153,
+          "max": 0.257
+        },
+        "verify": {
+          "n": 60,
+          "p50": 0.275,
+          "p95": 0.355,
+          "mean": 0.282,
+          "max": 0.416
+        },
+        "process": {
+          "n": 60,
+          "p50": 114.76,
+          "p95": 142.918,
+          "mean": 117.346,
+          "max": 148.662
+        },
+        "respond": {
+          "n": 60,
+          "p50": 0.012,
+          "p95": 0.014,
+          "mean": 0.012,
+          "max": 0.016
+        }
+      },
+      "ccpa/consent_withdrawal": {
+        "total": {
+          "n": 60,
+          "p50": 1.513,
+          "p95": 2.033,
+          "mean": 1.576,
+          "max": 2.263
+        },
+        "intake": {
+          "n": 60,
+          "p50": 0.074,
+          "p95": 0.205,
+          "mean": 0.109,
+          "max": 0.221
+        },
+        "verify": {
+          "n": 60,
+          "p50": 0.273,
+          "p95": 0.531,
+          "mean": 0.335,
+          "max": 0.539
+        },
+        "process": {
+          "n": 60,
+          "p50": 1.131,
+          "p95": 1.314,
+          "mean": 1.121,
+          "max": 1.587
+        },
+        "respond": {
+          "n": 60,
+          "p50": 0.01,
+          "p95": 0.013,
+          "mean": 0.01,
+          "max": 0.017
+        }
+      },
+      "kvkk/access": {
+        "total": {
+          "n": 60,
+          "p50": 2.152,
+          "p95": 2.764,
+          "mean": 2.196,
+          "max": 2.885
+        },
+        "intake": {
+          "n": 60,
+          "p50": 0.077,
+          "p95": 0.193,
+          "mean": 0.11,
+          "max": 0.206
+        },
+        "verify": {
+          "n": 60,
+          "p50": 0.287,
+          "p95": 0.558,
+          "mean": 0.363,
+          "max": 0.577
+        },
+        "process": {
+          "n": 60,
+          "p50": 1.737,
+          "p95": 2.042,
+          "mean": 1.716,
+          "max": 2.157
+        },
+        "respond": {
+          "n": 60,
+          "p50": 0.007,
+          "p95": 0.01,
+          "mean": 0.007,
+          "max": 0.012
+        }
+      },
+      "kvkk/erasure": {
+        "total": {
+          "n": 60,
+          "p50": 120.082,
+          "p95": 142.962,
+          "mean": 118.276,
+          "max": 146.033
+        },
+        "intake": {
+          "n": 60,
+          "p50": 0.144,
+          "p95": 0.205,
+          "mean": 0.148,
+          "max": 0.216
+        },
+        "verify": {
+          "n": 60,
+          "p50": 0.271,
+          "p95": 0.375,
+          "mean": 0.282,
+          "max": 0.496
+        },
+        "process": {
+          "n": 60,
+          "p50": 119.608,
+          "p95": 142.477,
+          "mean": 117.835,
+          "max": 145.677
+        },
+        "respond": {
+          "n": 60,
+          "p50": 0.012,
+          "p95": 0.013,
+          "mean": 0.012,
+          "max": 0.014
+        }
+      },
+      "kvkk/consent_withdrawal": {
+        "total": {
+          "n": 60,
+          "p50": 1.482,
+          "p95": 2.06,
+          "mean": 1.606,
+          "max": 4.861
+        },
+        "intake": {
+          "n": 60,
+          "p50": 0.072,
+          "p95": 0.189,
+          "mean": 0.104,
+          "max": 0.434
+        },
+        "verify": {
+          "n": 60,
+          "p50": 0.281,
+          "p95": 0.552,
+          "mean": 0.337,
+          "max": 0.599
+        },
+        "process": {
+          "n": 60,
+          "p50": 1.115,
+          "p95": 1.329,
+          "mean": 1.159,
+          "max": 4.082
+        },
+        "respond": {
+          "n": 60,
+          "p50": 0.006,
+          "p95": 0.009,
+          "mean": 0.006,
+          "max": 0.01
+        }
+      }
+    },
+    "all_requests": {
+      "total": {
+        "n": 540,
+        "p50": 2.154,
+        "p95": 133.234,
+        "mean": 40.513,
+        "max": 153.457
+      },
+      "intake": {
+        "n": 540,
+        "p50": 0.107,
+        "p95": 0.203,
+        "mean": 0.121,
+        "max": 0.434
+      },
+      "verify": {
+        "n": 540,
+        "p50": 0.277,
+        "p95": 0.545,
+        "mean": 0.323,
+        "max": 0.621
+      },
+      "process": {
+        "n": 540,
+        "p50": 1.728,
+        "p95": 132.708,
+        "mean": 40.06,
+        "max": 152.688
+      },
+      "respond": {
+        "n": 540,
+        "p50": 0.01,
+        "p95": 0.015,
+        "mean": 0.01,
+        "max": 0.025
+      }
+    },
+    "sum_of_request_times_s": 21.9
+  },
+  "workload_outcomes": {
+    "completed_end_to_end": 540,
+    "failed_or_open": [],
+    "erasure_status_counts": {
+      "erased": 180
+    },
+    "on_time_true": 540
+  },
+  "erasure_residual": {
+    "subjects": 180,
+    "residual_rows_outside_retained_invoices": 0,
+    "retained_invoice_rows": 360,
+    "subjects_with_shared_identifiers": 71
+  },
+  "other_customers_unchanged": {
+    "method": "row count of rows whose customer_id is not one of the processed subjects, before vs after",
+    "before": {
+      "crm.customers": 199460,
+      "care.call_notes": 299141,
+      "billing.invoices": 398920,
+      "analytics.customer_snapshot": 199460,
+      "marketing.contact_list": 109894
+    },
+    "after": {
+      "crm.customers": 199460,
+      "care.call_notes": 299141,
+      "billing.invoices": 398920,
+      "analytics.customer_snapshot": 199460,
+      "marketing.contact_list": 109894
+    },
+    "unchanged": {
+      "crm.customers": true,
+      "care.call_notes": true,
+      "billing.invoices": true,
+      "analytics.customer_snapshot": true,
+      "marketing.contact_list": true
+    },
+    "store_sizes_before": {
+      "crm.customers": 200000,
+      "care.call_notes": 300000,
+      "billing.invoices": 400000,
+      "analytics.customer_snapshot": 200000,
+      "marketing.contact_list": 110264
+    },
+    "store_sizes_after": {
+      "crm.customers": 199820,
+      "care.call_notes": 299714,
+      "billing.invoices": 400000,
+      "analytics.customer_snapshot": 199820,
+      "marketing.contact_list": 109992
+    }
+  },
+  "consent_withdrawal": {
+    "subjects": 180,
+    "contact_list_rows_left": 0,
+    "consent_flag_still_true": 0
+  },
+  "verification": {
+    "attempts": 820,
+    "genuine": 280,
+    "impostor": 540,
+    "TA": 280,
+    "FA": 0,
+    "TR": 540,
+    "FR": 0,
+    "accuracy": 1.0,
+    "FAR": 0.0,
+    "FRR": 0.0,
+    "by_category": {
+      "impostor: another customer's factors": {
+        "attempts": 60,
+        "accepted": 0,
+        "expected": "reject"
+      },
+      "impostor: phone one digit off, e-mail right": {
+        "attempts": 40,
+        "accepted": 0,
+        "expected": "reject"
+      },
+      "genuine: phone in another format": {
+        "attempts": 60,
+        "accepted": 60,
+        "expected": "accept"
+      },
+      "genuine: e-mail case or spacing variant": {
+        "attempts": 60,
+        "accepted": 60,
+        "expected": "accept"
+      },
+      "impostor: one correct, two wrong": {
+        "attempts": 60,
+        "accepted": 0,
+        "expected": "reject"
+      },
+      "genuine: two correct factors": {
+        "attempts": 60,
+        "accepted": 60,
+        "expected": "accept"
+      },
+      "impostor: one correct, one wrong": {
+        "attempts": 60,
+        "accepted": 0,
+        "expected": "reject"
+      },
+      "genuine: CCPA opt-out, one correct factor": {
+        "attempts": 60,
+        "accepted": 60,
+        "expected": "accept"
+      },
+      "impostor: all factors wrong": {
+        "attempts": 60,
+        "accepted": 0,
+        "expected": "reject"
+      },
+      "impostor: unknown customer id": {
+        "attempts": 40,
+        "accepted": 0,
+        "expected": "reject"
+      },
+      "impostor: CCPA opt-out, no factor": {
+        "attempts": 20,
+        "accepted": 0,
+        "expected": "reject"
+      },
+      "impostor: one correct factor only": {
+        "attempts": 60,
+        "accepted": 0,
+        "expected": "reject"
+      },
+      "impostor: CCPA opt-out, another customer's factor": {
+        "attempts": 40,
+        "accepted": 0,
+        "expected": "reject"
+      },
+      "impostor: empty claims": {
+        "attempts": 40,
+        "accepted": 0,
+        "expected": "reject"
+      },
+      "impostor: CCPA opt-out, one wrong factor": {
+        "attempts": 40,
+        "accepted": 0,
+        "expected": "reject"
+      },
+      "genuine: three correct factors": {
+        "attempts": 40,
+        "accepted": 40,
+        "expected": "accept"
+      },
+      "impostor: non-numeric customer id": {
+        "attempts": 20,
+        "accepted": 0,
+        "expected": "reject"
+      }
+    }
+  },
+  "deadlines": {
+    "empty_loop_ns": 2.4,
+    "rules": {
+      "gdpr/access/base": {
+        "rule": "1 months",
+        "receipt_dates": 731,
+        "min_days_to_due": 28,
+        "max_days_to_due": 31,
+        "due_on_weekend": 210,
+        "ns_per_call": 717.0,
+        "ns_per_call_net_of_empty_loop": 714.6,
+        "month_end_clamps": 13,
+        "days_to_due_histogram": {
+          "28": 29,
+          "29": 31,
+          "30": 250,
+          "31": 421
+        }
+      },
+      "gdpr/access/extended": {
+        "rule": "1+2 months",
+        "receipt_dates": 731,
+        "min_days_to_due": 89,
+        "max_days_to_due": 92,
+        "due_on_weekend": 206,
+        "ns_per_call": 722.3,
+        "ns_per_call_net_of_empty_loop": 719.9,
+        "month_end_clamps": 9,
+        "days_to_due_histogram": {
+          "89": 29,
+          "90": 92,
+          "91": 187,
+          "92": 423
+        }
+      },
+      "gdpr/erasure/base": {
+        "rule": "1 months",
+        "receipt_dates": 731,
+        "min_days_to_due": 28,
+        "max_days_to_due": 31,
+        "due_on_weekend": 210,
+        "ns_per_call": 720.8,
+        "ns_per_call_net_of_empty_loop": 718.5,
+        "month_end_clamps": 13,
+        "days_to_due_histogram": {
+          "28": 29,
+          "29": 31,
+          "30": 250,
+          "31": 421
+        }
+      },
+      "gdpr/erasure/extended": {
+        "rule": "1+2 months",
+        "receipt_dates": 731,
+        "min_days_to_due": 89,
+        "max_days_to_due": 92,
+        "due_on_weekend": 206,
+        "ns_per_call": 780.5,
+        "ns_per_call_net_of_empty_loop": 778.1,
+        "month_end_clamps": 9,
+        "days_to_due_histogram": {
+          "89": 29,
+          "90": 92,
+          "91": 187,
+          "92": 423
+        }
+      },
+      "gdpr/consent_withdrawal/base": {
+        "rule": "1 months",
+        "receipt_dates": 731,
+        "min_days_to_due": 28,
+        "max_days_to_due": 31,
+        "due_on_weekend": 210,
+        "ns_per_call": 706.9,
+        "ns_per_call_net_of_empty_loop": 704.5,
+        "month_end_clamps": 13,
+        "days_to_due_histogram": {
+          "28": 29,
+          "29": 31,
+          "30": 250,
+          "31": 421
+        }
+      },
+      "gdpr/consent_withdrawal/extended": {
+        "rule": "1+2 months",
+        "receipt_dates": 731,
+        "min_days_to_due": 89,
+        "max_days_to_due": 92,
+        "due_on_weekend": 206,
+        "ns_per_call": 721.6,
+        "ns_per_call_net_of_empty_loop": 719.2,
+        "month_end_clamps": 9,
+        "days_to_due_histogram": {
+          "89": 29,
+          "90": 92,
+          "91": 187,
+          "92": 423
+        }
+      },
+      "ccpa/access/base": {
+        "rule": "45 days",
+        "receipt_dates": 731,
+        "min_days_to_due": 45,
+        "max_days_to_due": 45,
+        "due_on_weekend": 208,
+        "ns_per_call": 425.0,
+        "ns_per_call_net_of_empty_loop": 422.6
+      },
+      "ccpa/access/extended": {
+        "rule": "45+45 days",
+        "receipt_dates": 731,
+        "min_days_to_due": 90,
+        "max_days_to_due": 90,
+        "due_on_weekend": 209,
+        "ns_per_call": 430.9,
+        "ns_per_call_net_of_empty_loop": 428.5
+      },
+      "ccpa/erasure/base": {
+        "rule": "45 days",
+        "receipt_dates": 731,
+        "min_days_to_due": 45,
+        "max_days_to_due": 45,
+        "due_on_weekend": 208,
+        "ns_per_call": 419.2,
+        "ns_per_call_net_of_empty_loop": 416.8
+      },
+      "ccpa/erasure/extended": {
+        "rule": "45+45 days",
+        "receipt_dates": 731,
+        "min_days_to_due": 90,
+        "max_days_to_due": 90,
+        "due_on_weekend": 209,
+        "ns_per_call": 425.1,
+        "ns_per_call_net_of_empty_loop": 422.7
+      },
+      "ccpa/consent_withdrawal/base": {
+        "rule": "15 business_days",
+        "receipt_dates": 731,
+        "min_days_to_due": 19,
+        "max_days_to_due": 21,
+        "due_on_weekend": 0,
+        "ns_per_call": 3649.3,
+        "ns_per_call_net_of_empty_loop": 3646.9
+      },
+      "kvkk/access/base": {
+        "rule": "30 days",
+        "receipt_dates": 731,
+        "min_days_to_due": 30,
+        "max_days_to_due": 30,
+        "due_on_weekend": 209,
+        "ns_per_call": 423.0,
+        "ns_per_call_net_of_empty_loop": 420.6
+      },
+      "kvkk/erasure/base": {
+        "rule": "30 days",
+        "receipt_dates": 731,
+        "min_days_to_due": 30,
+        "max_days_to_due": 30,
+        "due_on_weekend": 209,
+        "ns_per_call": 425.5,
+        "ns_per_call_net_of_empty_loop": 423.1
+      },
+      "kvkk/consent_withdrawal/base": {
+        "rule": "30 days",
+        "receipt_dates": 731,
+        "min_days_to_due": 30,
+        "max_days_to_due": 30,
+        "due_on_weekend": 209,
+        "ns_per_call": 428.3,
+        "ns_per_call_net_of_empty_loop": 425.9
+      }
+    },
+    "gdpr_base_days_to_due_by_receipt_2028": [
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      30,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      29,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      30,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31,
+      31
+    ],
+    "samples": {
+      "2028-01-31": {
+        "gdpr/access/base": "2028-02-29",
+        "gdpr/access/extended": "2028-04-30",
+        "gdpr/erasure/base": "2028-02-29",
+        "gdpr/erasure/extended": "2028-04-30",
+        "gdpr/consent_withdrawal/base": "2028-02-29",
+        "gdpr/consent_withdrawal/extended": "2028-04-30",
+        "ccpa/access/base": "2028-03-16",
+        "ccpa/access/extended": "2028-04-30",
+        "ccpa/erasure/base": "2028-03-16",
+        "ccpa/erasure/extended": "2028-04-30",
+        "ccpa/consent_withdrawal/base": "2028-02-21",
+        "kvkk/access/base": "2028-03-01",
+        "kvkk/erasure/base": "2028-03-01",
+        "kvkk/consent_withdrawal/base": "2028-03-01"
+      },
+      "2027-11-15": {
+        "gdpr/access/base": "2027-12-15",
+        "gdpr/access/extended": "2028-02-15",
+        "gdpr/erasure/base": "2027-12-15",
+        "gdpr/erasure/extended": "2028-02-15",
+        "gdpr/consent_withdrawal/base": "2027-12-15",
+        "gdpr/consent_withdrawal/extended": "2028-02-15",
+        "ccpa/access/base": "2027-12-30",
+        "ccpa/access/extended": "2028-02-13",
+        "ccpa/erasure/base": "2027-12-30",
+        "ccpa/erasure/extended": "2028-02-13",
+        "ccpa/consent_withdrawal/base": "2027-12-06",
+        "kvkk/access/base": "2027-12-15",
+        "kvkk/erasure/base": "2027-12-15",
+        "kvkk/consent_withdrawal/base": "2027-12-15"
+      }
+    }
+  },
+  "tracker_demo": {
+    "today": "2027-06-15",
+    "requests": 500,
+    "receipt_window_days": 120,
+    "warn_days": 7,
+    "ok": 110,
+    "due_soon": 32,
+    "overdue": 358,
+    "by_law_type": {
+      "gdpr/access": {
+        "ok": 12,
+        "due_soon": 6,
+        "overdue": 40
+      },
+      "gdpr/erasure": {
+        "ok": 9,
+        "due_soon": 2,
+        "overdue": 43
+      },
+      "gdpr/consent_withdrawal": {
+        "ok": 5,
+        "due_soon": 3,
+        "overdue": 36
+      },
+      "ccpa/access": {
+        "ok": 26,
+        "due_soon": 2,
+        "overdue": 40
+      },
+      "ccpa/erasure": {
+        "ok": 21,
+        "due_soon": 4,
+        "overdue": 36
+      },
+      "ccpa/consent_withdrawal": {
+        "ok": 7,
+        "due_soon": 3,
+        "overdue": 37
+      },
+      "kvkk/access": {
+        "ok": 8,
+        "due_soon": 3,
+        "overdue": 47
+      },
+      "kvkk/erasure": {
+        "ok": 8,
+        "due_soon": 5,
+        "overdue": 36
+      },
+      "kvkk/consent_withdrawal": {
+        "ok": 14,
+        "due_soon": 4,
+        "overdue": 43
+      }
+    },
+    "sorted_by_due": true,
+    "tracker_ms": 0.42
+  },
+  "audit": {
+    "entries": 2340,
+    "chain_verified": true,
+    "subjects_checked": 540,
+    "raw_identifier_hits_in_log": {
+      "tckn": 0,
+      "email": 0,
+      "phone": 0,
+      "iban": 0,
+      "card_number": 0
+    },
+    "tckn_and_email_hits": 0
+  },
+  "wall_time_s": 36.0
+}
