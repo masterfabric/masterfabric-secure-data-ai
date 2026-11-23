@@ -80,6 +80,25 @@ def test_one_factor_fails(svc, estate):
     assert req.history[-1]["factors_matched"] == 1
 
 
+def test_ccpa_opt_out_needs_only_identification(svc, estate):
+    cid = _cid(estate)
+    for f in ("email", "phone", "tckn_last4"):
+        req = svc.intake(Law.CCPA, T.CONSENT_WITHDRAWAL, TODAY, _claims(estate, cid, f))
+        assert svc.verify_identity(req, TODAY) and req.history[-1]["factors_matched"] == 1
+    none = svc.intake(Law.CCPA, T.CONSENT_WITHDRAWAL, TODAY, {"customer_id": cid, "email": "other@example.com"})
+    assert not svc.verify_identity(none, TODAY)  # identification still has to match the record
+    ghost = svc.intake(Law.CCPA, T.CONSENT_WITHDRAWAL, TODAY, {"customer_id": 999999, "email": "a@b.co"})
+    assert not svc.verify_identity(ghost, TODAY)
+
+
+def test_ccpa_access_and_other_opt_outs_still_need_two_factors(svc, estate):
+    cid = _cid(estate)
+    for law, rtype in ((Law.CCPA, T.ACCESS), (Law.CCPA, T.ERASURE), (Law.GDPR, T.CONSENT_WITHDRAWAL),
+                       (Law.KVKK, T.CONSENT_WITHDRAWAL)):
+        req = svc.intake(law, rtype, TODAY, _claims(estate, cid, "email"))
+        assert not svc.verify_identity(req, TODAY) and req.state == "identity_rejected", (law, rtype)
+
+
 def test_wrong_factor_fails_and_formatting_is_normalised(svc, estate):
     c = _claims(estate, _cid(estate), "email", "phone")
     bad = svc.intake(Law.KVKK, T.ACCESS, TODAY, {**c, "email": "other@example.com", "tckn_last4": "0000"})

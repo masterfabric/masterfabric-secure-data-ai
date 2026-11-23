@@ -12,6 +12,11 @@ last four digits of the TCKN) and at least two of them must match. Each comparis
 factors are always compared, so neither timing nor an early exit tells the requester which factor was wrong. The
 claims are dropped from the request once checked.
 
+One exception, modelled on a reading of CCR tit. 11 s. 7026(d) (check the current regulation text; not legal
+advice): a CCPA opt-out of sale/sharing (CONSENT_WITHDRAWAL) is not a request that needs verification, and the
+business may ask only for what it needs to identify whose data to stop selling or sharing. For that one law and
+type a single matching factor is therefore enough (MIN_FACTORS_IDENTIFY); every other law and type still needs two.
+
 Processing per type:
   ACCESS              a report for the subject (their own data, per store). The report is returned to the
                       requester and kept on the request, never written to the audit log or the response document.
@@ -41,6 +46,7 @@ TRANSITIONS = {RECEIVED: {VERIFIED, REJECTED_ID, REJECTED}, NEEDS_INFO: {VERIFIE
                REJECTED_ID: {NEEDS_INFO, REJECTED}, VERIFIED: {PROCESSING, REJECTED},
                PROCESSING: {COMPLETED, REJECTED}, COMPLETED: set(), REJECTED: set()}
 MIN_FACTORS = 2
+MIN_FACTORS_IDENTIFY = 1  # CCPA opt-out: identification of the record, not verification (see module docstring)
 FACTORS = ("email", "phone", "tckn_last4")
 
 
@@ -78,6 +84,10 @@ def _norm(factor: str, v) -> str:
     if factor == "phone":
         return digits(v)[-10:]
     return digits(v)[-4:]
+
+
+def required_factors(law: Law, rtype: RequestType) -> int:
+    return MIN_FACTORS_IDENTIFY if (law, rtype) == (Law.CCPA, RequestType.CONSENT_WITHDRAWAL) else MIN_FACTORS
 
 
 class DSRService:
@@ -124,10 +134,11 @@ class DSRService:
         hits = [bool(_norm(f, req.claims.get(f))) & _eq(_norm(f, req.claims.get(f)), _norm(f, held[f])) for f in FACTORS]
         matched = sum(hits) if row else 0
         req.claims = {}
-        ok = matched >= MIN_FACTORS
+        need = required_factors(req.law, req.type)
+        ok = matched >= need
         self._move(req, VERIFIED if ok else REJECTED_ID)
         self._log(req, "identity_verified" if ok else "identity_rejected", today, "allow" if ok else "deny",
-                  "" if ok else f"fewer than {MIN_FACTORS} matching factors", factors_matched=matched)
+                  "" if ok else f"fewer than {need} matching factors", factors_matched=matched)
         return ok
 
     def request_info(self, req: DSRequest, today: date, claims: dict | None = None) -> None:
